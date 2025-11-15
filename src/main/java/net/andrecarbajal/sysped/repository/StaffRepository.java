@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface StaffRepository extends JpaRepository<Staff, String> {
     Optional<Staff> findByDni(String dni);
+
     List<Staff> findByActiveTrue();
+
     Optional<Staff> findByDniAndActiveTrue(String dni);
 }
