@@ -654,12 +654,12 @@ function openViewOrderModal(tableNumber) {
 }
 
 function displayOrderDetails(order, contentDiv) {
-    if (!order.details || !Array.isArray(order.details)) {
+    if (!order.items || !Array.isArray(order.items)) {
         contentDiv.innerHTML = '<p>No hay detalles del pedido disponibles.</p>';
         return;
     }
 
-    const itemsHtml = order.details.map(detail => {
+    const itemsHtml = order.items.map(detail => {
         const plateName = detail.plate && detail.plate.name ? detail.plate.name : 'Plato desconocido';
         return `
         <div class="order-item">
@@ -767,7 +767,7 @@ function openEditOrderModal(tableNumber) {
         })
         .then(order => {
             currentOrderId = order.id;
-            order.details.forEach(detail => {
+            order.items.forEach(detail => {
                 currentOrderItems.push({
                     plateId: detail.plate.id,
                     name: detail.plate.name,

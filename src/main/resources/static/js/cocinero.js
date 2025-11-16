@@ -126,7 +126,7 @@ function createOrderCard(o) {
         estadoBadge = `<span class="order-status-badge">${o.status}</span>`;
     }
 
-    const itemsHtml = (o.details || []).map(i => `<li>${i.quantity} x ${i.plate.name} (${i.notes || ''})</li>`).join('');
+    const itemsHtml = (o.items || []).map(i => `<li>${i.quantity} x ${i.plate.name} (${i.notes || ''})</li>`).join('');
 
     return `
         <div class="order-card ${o.status === 'PENDIENTE' ? 'order-pendiente' : ''} ${o.status === 'EN_PREPARACION' ? 'order-en-preparacion' : ''}" id="order-card-${o.id}">

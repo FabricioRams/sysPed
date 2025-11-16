@@ -1,6 +1,5 @@
 package net.andrecarbajal.sysped.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.controller.OrderWebSocketController;
 import net.andrecarbajal.sysped.dto.OrderCreateRequestDto;
@@ -21,6 +20,7 @@ import net.andrecarbajal.sysped.repository.TableRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -257,6 +257,7 @@ public class OrderService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public Optional<OrderDto> getOrderById(Long orderId) {
         return orderRepository.findById(orderId).map(o -> OrderDto.builder()
                 .id(o.getId())
