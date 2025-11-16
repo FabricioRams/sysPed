@@ -18,7 +18,7 @@ public class PlateService {
     private final PlateRepository plateRepository;
     private final PlateStatusWebSocketController plateStatusWebSocketController;
 
-    public Plate setPlateActive(Long plateId, boolean active) {
+    public void setPlateActive(Long plateId, boolean active) {
         Plate plate = plateRepository.findById(plateId)
                 .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado"));
         plate.setActive(active);
@@ -37,10 +37,9 @@ public class PlateService {
                 .active(updatedPlate.isActive())
                 .build();
         plateStatusWebSocketController.sendPlateUpdate(fullDto);
-        return updatedPlate;
     }
 
-    public Plate updatePlate(Long id, BigDecimal price, String imageBase64, boolean active) {
+    public void updatePlate(Long id, BigDecimal price, String imageBase64, boolean active) {
         Plate plate = plateRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado"));
         plate.setPrice(price);
@@ -57,7 +56,6 @@ public class PlateService {
                 .active(updatedPlate.isActive())
                 .build();
         plateStatusWebSocketController.sendPlateUpdate(fullDto);
-        return updatedPlate;
     }
 
     public List<PlateDto> findAllActivePlates() {
