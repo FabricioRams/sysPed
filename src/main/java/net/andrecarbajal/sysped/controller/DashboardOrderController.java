@@ -3,10 +3,9 @@ package net.andrecarbajal.sysped.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.dto.OrderCreateRequestDto;
-import net.andrecarbajal.sysped.dto.OrderCreateResponseDto;
 import net.andrecarbajal.sysped.dto.OrderDto;
 import net.andrecarbajal.sysped.dto.OrderStatusChangeRequestDto;
-import net.andrecarbajal.sysped.dto.PlateListDto;
+import net.andrecarbajal.sysped.dto.PlateDto;
 import net.andrecarbajal.sysped.model.OrderStatus;
 import net.andrecarbajal.sysped.service.OrderService;
 import net.andrecarbajal.sysped.service.PlateService;
@@ -33,9 +32,9 @@ public class DashboardOrderController {
     private final PlateService plateService;
 
     @PostMapping
-    public ResponseEntity<OrderCreateResponseDto> createOrder(@Valid @RequestBody OrderCreateRequestDto request) {
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderCreateRequestDto request) {
         try {
-            OrderCreateResponseDto response = orderService.createOrder(request);
+            OrderDto response = orderService.createOrder(request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
@@ -66,11 +65,11 @@ public class DashboardOrderController {
     @PostMapping("/{orderId}/status")
     public ResponseEntity<Object> changeOrderStatus(@PathVariable Long orderId, @RequestBody OrderStatusChangeRequestDto body) {
         try {
-            OrderStatus st = OrderStatus.valueOf(body.status());
+            OrderStatus st = OrderStatus.valueOf(body.getStatus());
             OrderDto updated = orderService.updateOrderStatus(orderId, st);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Estado inválido: " + body.status());
+            return ResponseEntity.badRequest().body("Estado inválido: " + body.getStatus());
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(e.getMessage());
         } catch (Exception e) {
@@ -98,9 +97,9 @@ public class DashboardOrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderCreateResponseDto> updateOrder(@PathVariable Long orderId, @Valid @RequestBody OrderCreateRequestDto request) {
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long orderId, @Valid @RequestBody OrderCreateRequestDto request) {
         try {
-            OrderCreateResponseDto response = orderService.updateOrder(orderId, request);
+            OrderDto response = orderService.updateOrder(orderId, request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().build();
@@ -110,9 +109,9 @@ public class DashboardOrderController {
     }
 
     @GetMapping("/plates")
-    public ResponseEntity<List<PlateListDto>> getAvailablePlates() {
+    public ResponseEntity<List<PlateDto>> getAvailablePlates() {
         try {
-            List<PlateListDto> plates = plateService.findAllActivePlates();
+            List<PlateDto> plates = plateService.findAllActivePlates();
             return ResponseEntity.ok(plates);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();

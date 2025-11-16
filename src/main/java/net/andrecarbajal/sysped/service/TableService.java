@@ -1,7 +1,7 @@
 package net.andrecarbajal.sysped.service;
 
 import lombok.RequiredArgsConstructor;
-import net.andrecarbajal.sysped.dto.TableResponseDto;
+import net.andrecarbajal.sysped.dto.TableDto;
 import net.andrecarbajal.sysped.dto.TableSummaryDto;
 import net.andrecarbajal.sysped.model.RestaurantTable;
 import net.andrecarbajal.sysped.model.TableStatus;
@@ -19,7 +19,7 @@ public class TableService {
     private final TableRepository tableRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public List<TableResponseDto> getOperativeTables() {
+    public List<TableDto> getOperativeTables() {
         List<RestaurantTable> restaurantTables = tableRepository.findAll();
         return restaurantTables.stream()
                 .map(this::convertToDTO)
@@ -33,10 +33,15 @@ public class TableService {
         long falta = tableRepository.countByStatus(TableStatus.FALTA_ATENCION);
         long entregado = tableRepository.countByStatus(TableStatus.PEDIDO_ENTREGADO);
 
-        return new TableSummaryDto(libres, esperando, falta, entregado);
+        return TableSummaryDto.builder()
+                .countLibres(libres)
+                .countEsperandoPedido(esperando)
+                .countFaltaAtencion(falta)
+                .countPedidoEntregado(entregado)
+                .build();
     }
 
-    public TableResponseDto updateTableStatus(Integer tableNumber, TableStatus newStatus) {
+    public TableDto updateTableStatus(Integer tableNumber, TableStatus newStatus) {
 
         RestaurantTable restaurantTable = tableRepository.findByNumber(tableNumber)
                 .orElseThrow(() -> new RuntimeException("Mesa no encontrada: " + tableNumber));
@@ -52,7 +57,7 @@ public class TableService {
         restaurantTable.setStatus(newStatus);
         RestaurantTable updatedRestaurantTable = tableRepository.save(restaurantTable);
 
-        TableResponseDto dto = convertToDTO(updatedRestaurantTable);
+        TableDto dto = convertToDTO(updatedRestaurantTable);
 
         messagingTemplate.convertAndSend("/topic/table-status", dto);
 
@@ -64,7 +69,8 @@ public class TableService {
             case DISPONIBLE -> Set.of(TableStatus.FUERA_DE_SERVICIO, TableStatus.ESPERANDO_PEDIDO);
             case ESPERANDO_PEDIDO ->
                     Set.of(TableStatus.FALTA_ATENCION, TableStatus.PEDIDO_ENTREGADO, TableStatus.DISPONIBLE);
-            case FALTA_ATENCION -> Set.of(TableStatus.DISPONIBLE, TableStatus.PEDIDO_ENTREGADO, TableStatus.ESPERANDO_PEDIDO);
+            case FALTA_ATENCION ->
+                    Set.of(TableStatus.DISPONIBLE, TableStatus.PEDIDO_ENTREGADO, TableStatus.ESPERANDO_PEDIDO);
             case PEDIDO_ENTREGADO ->
                     Set.of(TableStatus.DISPONIBLE, TableStatus.ESPERANDO_PEDIDO, TableStatus.FALTA_ATENCION);
             case FUERA_DE_SERVICIO -> Set.of(TableStatus.DISPONIBLE);
@@ -82,11 +88,14 @@ public class TableService {
                 .orElseThrow(() -> new RuntimeException("Table not found"));
         table.setStatus(newStatus);
         RestaurantTable updatedTable = tableRepository.save(table);
-        TableResponseDto dto = convertToDTO(updatedTable);
+        TableDto dto = convertToDTO(updatedTable);
         messagingTemplate.convertAndSend("/topic/table-status", dto);
     }
 
-    private TableResponseDto convertToDTO(RestaurantTable restaurantTable) {
-        return new TableResponseDto(restaurantTable.getNumber(), restaurantTable.getStatus());
+    private TableDto convertToDTO(RestaurantTable restaurantTable) {
+        return TableDto.builder()
+                .number(restaurantTable.getNumber())
+                .status(restaurantTable.getStatus())
+                .build();
     }
 }

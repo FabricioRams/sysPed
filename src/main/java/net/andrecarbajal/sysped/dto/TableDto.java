@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.andrecarbajal.sysped.model.TableStatus;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TableSummaryDto {
-    private long countLibres;
-    private long countEsperandoPedido;
-    private long countFaltaAtencion;
-    private long countPedidoEntregado;
+public class TableDto {
+    private Integer number;
+    private TableStatus status;
 }

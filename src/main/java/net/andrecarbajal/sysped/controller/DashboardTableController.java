@@ -1,7 +1,7 @@
 package net.andrecarbajal.sysped.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.andrecarbajal.sysped.dto.TableStatusUpdateDto;
+import net.andrecarbajal.sysped.dto.TableDto;
 import net.andrecarbajal.sysped.model.TableStatus;
 import net.andrecarbajal.sysped.service.TableService;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,13 @@ public class DashboardTableController {
     }
 
     @PostMapping("/{tableId}/status")
-    public ResponseEntity<Void> changeStatus(@PathVariable Long tableId, @RequestBody TableStatusUpdateDto statusUpdate) {
+    public ResponseEntity<Void> changeStatus(@PathVariable Long tableId, @RequestBody TableDto statusUpdate) {
         try {
-            TableStatus newStatus = TableStatus.valueOf(statusUpdate.status());
-            tableService.changeStatus(tableId, newStatus);
+            // TableDto now uses TableStatus enum directly
+            if (statusUpdate.getStatus() == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            tableService.changeStatus(tableId, statusUpdate.getStatus());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

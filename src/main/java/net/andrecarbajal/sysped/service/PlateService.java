@@ -3,7 +3,6 @@ package net.andrecarbajal.sysped.service;
 import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.controller.PlateStatusWebSocketController;
 import net.andrecarbajal.sysped.dto.PlateDto;
-import net.andrecarbajal.sysped.dto.PlateListDto;
 import net.andrecarbajal.sysped.dto.PlateStatusDto;
 import net.andrecarbajal.sysped.model.Plate;
 import net.andrecarbajal.sysped.repository.PlateRepository;
@@ -24,9 +23,19 @@ public class PlateService {
                 .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado"));
         plate.setActive(active);
         Plate updatedPlate = plateRepository.save(plate);
-        PlateStatusDto dto = new PlateStatusDto(updatedPlate.getId(), updatedPlate.isActive());
+        PlateStatusDto dto = PlateStatusDto.builder()
+                .id(updatedPlate.getId())
+                .active(updatedPlate.isActive())
+                .build();
         plateStatusWebSocketController.sendPlateStatusUpdate(dto);
-        PlateDto fullDto = new PlateDto(updatedPlate.getId(), updatedPlate.getName(), updatedPlate.getDescription(), updatedPlate.getPrice(), updatedPlate.getImageBase64(), updatedPlate.isActive());
+        PlateDto fullDto = PlateDto.builder()
+                .id(updatedPlate.getId())
+                .name(updatedPlate.getName())
+                .description(updatedPlate.getDescription())
+                .price(updatedPlate.getPrice())
+                .imageBase64(updatedPlate.getImageBase64())
+                .active(updatedPlate.isActive())
+                .build();
         plateStatusWebSocketController.sendPlateUpdate(fullDto);
         return updatedPlate;
     }
@@ -39,22 +48,29 @@ public class PlateService {
         plate.setImageBase64(normalizedImage);
         plate.setActive(active);
         Plate updatedPlate = plateRepository.save(plate);
-        PlateDto fullDto = new PlateDto(updatedPlate.getId(), updatedPlate.getName(), updatedPlate.getDescription(), updatedPlate.getPrice(), updatedPlate.getImageBase64(), updatedPlate.isActive());
+        PlateDto fullDto = PlateDto.builder()
+                .id(updatedPlate.getId())
+                .name(updatedPlate.getName())
+                .description(updatedPlate.getDescription())
+                .price(updatedPlate.getPrice())
+                .imageBase64(updatedPlate.getImageBase64())
+                .active(updatedPlate.isActive())
+                .build();
         plateStatusWebSocketController.sendPlateUpdate(fullDto);
         return updatedPlate;
     }
 
-    public List<PlateListDto> findAllActivePlates() {
+    public List<PlateDto> findAllActivePlates() {
         return plateRepository.findAll().stream()
                 .filter(plate -> Boolean.TRUE.equals(plate.isActive()))
-                .map(plate -> new PlateListDto(
-                        plate.getId(),
-                        plate.getName(),
-                        plate.getDescription(),
-                        plate.getPrice(),
-                        plate.getImageBase64(),
-                        plate.isActive()
-                ))
+                .map(plate -> PlateDto.builder()
+                        .id(plate.getId())
+                        .name(plate.getName())
+                        .description(plate.getDescription())
+                        .price(plate.getPrice())
+                        .imageBase64(plate.getImageBase64())
+                        .active(plate.isActive())
+                        .build())
                 .collect(Collectors.toList());
     }
 }

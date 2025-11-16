@@ -2,13 +2,12 @@ package net.andrecarbajal.sysped.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import net.andrecarbajal.sysped.dto.StaffCreateRequestDto;
-import net.andrecarbajal.sysped.dto.StaffEditRequestDto;
+import net.andrecarbajal.sysped.dto.StaffRequestDto;
 import net.andrecarbajal.sysped.model.Rol;
 import net.andrecarbajal.sysped.model.Staff;
 import net.andrecarbajal.sysped.model.StaffAudit;
-import net.andrecarbajal.sysped.repository.StaffRepository;
 import net.andrecarbajal.sysped.repository.StaffAuditRepository;
+import net.andrecarbajal.sysped.repository.StaffRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,25 +37,29 @@ public class StaffService {
     }
 
     @Transactional
-    public void createStaff(StaffCreateRequestDto dto, Rol rol) {
-        Optional<Staff> existingStaff = staffRepository.findByDni(dto.dni());
+    public void createStaff(StaffRequestDto dto, Rol rol) {
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria para crear un nuevo usuario");
+        }
+
+        Optional<Staff> existingStaff = staffRepository.findByDni(dto.getDni());
 
         Staff staff;
         boolean isNew = false;
         if (existingStaff.isPresent()) {
             staff = existingStaff.get();
             if (staff.getActive()) {
-                throw new IllegalArgumentException("Ya existe un usuario activo con el DNI " + dto.dni());
+                throw new IllegalArgumentException("Ya existe un usuario activo con el DNI " + dto.getDni());
             }
             staff.setActive(true);
-            staff.setName(dto.name());
-            staff.setPassword(passwordEncoder.encode(dto.password()));
+            staff.setName(dto.getName());
+            staff.setPassword(passwordEncoder.encode(dto.getPassword()));
             staff.setRol(rol);
         } else {
             staff = new Staff();
-            staff.setDni(dto.dni());
-            staff.setName(dto.name());
-            staff.setPassword(passwordEncoder.encode(dto.password()));
+            staff.setDni(dto.getDni());
+            staff.setName(dto.getName());
+            staff.setPassword(passwordEncoder.encode(dto.getPassword()));
             staff.setRol(rol);
             staff.setActive(true);
             isNew = true;
@@ -104,13 +107,13 @@ public class StaffService {
     }
 
     @Transactional
-    public void updateStaff(StaffEditRequestDto dto, Rol rol) {
-        Staff staff = staffRepository.findByDni(dto.dni())
+    public void updateStaff(StaffRequestDto dto, Rol rol) {
+        Staff staff = staffRepository.findByDni(dto.getDni())
                 .orElseThrow(() -> new IllegalArgumentException("Staff no encontrado"));
-        staff.setName(dto.name());
+        staff.setName(dto.getName());
         staff.setRol(rol);
-        if (dto.password() != null && !dto.password().isBlank()) {
-            staff.setPassword(passwordEncoder.encode(dto.password()));
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            staff.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
         Staff saved = staffRepository.save(staff);
 

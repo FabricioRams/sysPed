@@ -1,11 +1,11 @@
 package net.andrecarbajal.sysped.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.andrecarbajal.sysped.dto.StaffCreateRequestDto;
-import net.andrecarbajal.sysped.dto.StaffEditRequestDto;
-import net.andrecarbajal.sysped.service.StaffService;
+import net.andrecarbajal.sysped.dto.StaffRequestDto;
 import net.andrecarbajal.sysped.model.Rol;
 import net.andrecarbajal.sysped.service.RolService;
+import net.andrecarbajal.sysped.service.StaffService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/dashboard/staff")
@@ -49,13 +47,13 @@ public class DashboardStaffController {
     }
 
     @PostMapping("/edit")
-    public String editStaff(@Valid @ModelAttribute StaffEditRequestDto staffEditRequestDto, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String editStaff(@Valid @ModelAttribute StaffRequestDto staffEditRequestDto, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("error", "Datos inválidos para editar personal.");
             return "redirect:/dashboard";
         }
         try {
-            Rol rol = this.rolService.findRolByName(staffEditRequestDto.rolName())
+            Rol rol = this.rolService.findRolByName(staffEditRequestDto.getRolName())
                     .orElseThrow(() -> new IllegalArgumentException("El rol no existe."));
             this.staffService.updateStaff(staffEditRequestDto, rol);
             redirectAttributes.addFlashAttribute("success", "Datos del personal actualizados correctamente.");
@@ -68,13 +66,13 @@ public class DashboardStaffController {
     }
 
     @PostMapping("/create")
-    public String createStaff(@Valid @ModelAttribute StaffCreateRequestDto staffCreateRequestDto, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String createStaff(@Valid @ModelAttribute StaffRequestDto staffCreateRequestDto, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("error", "Datos inválidos para crear personal: " + result.getAllErrors().getFirst().getDefaultMessage());
             return "redirect:/dashboard";
         }
         try {
-            Rol rol = this.rolService.findRolByName(staffCreateRequestDto.rolName())
+            Rol rol = this.rolService.findRolByName(staffCreateRequestDto.getRolName())
                     .orElseThrow(() -> new IllegalArgumentException("El rol no existe."));
             this.staffService.createStaff(staffCreateRequestDto, rol);
             redirectAttributes.addFlashAttribute("success", "Personal creado correctamente.");

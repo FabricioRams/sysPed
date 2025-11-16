@@ -4,9 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.controller.OrderWebSocketController;
 import net.andrecarbajal.sysped.dto.OrderCreateRequestDto;
-import net.andrecarbajal.sysped.dto.OrderCreateResponseDto;
 import net.andrecarbajal.sysped.dto.OrderDto;
-import net.andrecarbajal.sysped.dto.OrderItemResponseDto;
+import net.andrecarbajal.sysped.dto.OrderItemDto;
 import net.andrecarbajal.sysped.dto.PlateDto;
 import net.andrecarbajal.sysped.model.Order;
 import net.andrecarbajal.sysped.model.OrderDetails;
@@ -44,12 +43,12 @@ public class OrderService {
     private final OrderWebSocketController orderWebSocketController;
 
     @Transactional
-    public OrderCreateResponseDto createOrder(OrderCreateRequestDto request) {
-        RestaurantTable restaurantTable = tableRepository.findByNumber(request.tableNumber())
-                .orElseThrow(() -> new IllegalArgumentException("Mesa no encontrada: " + request.tableNumber()));
+    public OrderDto createOrder(OrderCreateRequestDto request) {
+        RestaurantTable restaurantTable = tableRepository.findByNumber(request.getTableNumber())
+                .orElseThrow(() -> new IllegalArgumentException("Mesa no encontrada: " + request.getTableNumber()));
 
         if (restaurantTable.getStatus() != TableStatus.DISPONIBLE) {
-            throw new IllegalStateException("La mesa " + request.tableNumber() + " no está disponible para pedidos");
+            throw new IllegalStateException("La mesa " + request.getTableNumber() + " no está disponible para pedidos");
         }
 
         Staff currentStaff = getCurrentStaff();
@@ -61,9 +60,9 @@ public class OrderService {
 
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        for (var item : request.items()) {
-            Plate plate = plateRepository.findById(item.plateId())
-                    .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado: " + item.plateId()));
+        for (var item : request.getItems()) {
+            Plate plate = plateRepository.findById(item.getPlateId())
+                    .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado: " + item.getPlateId()));
 
             if (!Boolean.TRUE.equals(plate.isActive())) {
                 throw new IllegalStateException("El plato " + plate.getName() + " no está disponible");
@@ -72,13 +71,13 @@ public class OrderService {
             OrderDetails detail = new OrderDetails();
             detail.setOrder(order);
             detail.setPlate(plate);
-            detail.setQuantity(item.quantity());
+            detail.setQuantity(item.getQuantity());
             detail.setPriceUnit(plate.getPrice());
-            detail.setNotes(item.notes());
+            detail.setNotes(item.getNotes());
 
             order.addOrderDetail(detail);
 
-            BigDecimal itemTotal = plate.getPrice().multiply(BigDecimal.valueOf(item.quantity()));
+            BigDecimal itemTotal = plate.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             totalPrice = totalPrice.add(itemTotal);
         }
 
@@ -86,46 +85,60 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        tableService.updateTableStatus(request.tableNumber(), TableStatus.ESPERANDO_PEDIDO);
+        tableService.updateTableStatus(request.getTableNumber(), TableStatus.ESPERANDO_PEDIDO);
 
         try {
-            orderWebSocketController.sendOrderUpdate(new OrderDto(
-                    savedOrder.getId(),
-                    savedOrder.getRestaurantTable().getNumber(),
-                    savedOrder.getDateandtimeOrder(),
-                    savedOrder.getStatus(),
-                    savedOrder.getPriceTotal(),
-                    savedOrder.getDetails().stream().map(d -> new OrderItemResponseDto(
-                            d.getPlate().getId(),
-                            new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                            d.getQuantity(),
-                            d.getPriceUnit(),
-                            d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                            d.getNotes()
-                    )).toList()
-            ));
+            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
+                    .id(savedOrder.getId())
+                    .tableNumber(savedOrder.getRestaurantTable().getNumber())
+                    .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
+                    .status(savedOrder.getStatus())
+                    .totalPrice(savedOrder.getPriceTotal())
+                    .items(savedOrder.getDetails().stream().map(d -> OrderItemDto.builder()
+                            .plateId(d.getPlate().getId())
+                            .plate(PlateDto.builder()
+                                    .id(d.getPlate().getId())
+                                    .name(d.getPlate().getName())
+                                    .description(d.getPlate().getDescription())
+                                    .price(d.getPlate().getPrice())
+                                    .imageBase64(d.getPlate().getImageBase64())
+                                    .active(d.getPlate().isActive())
+                                    .build())
+                            .quantity(d.getQuantity())
+                            .priceUnit(d.getPriceUnit())
+                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                            .notes(d.getNotes())
+                            .build()).toList())
+                    .build());
         } catch (Exception ignored) {
         }
 
-        List<OrderItemResponseDto> itemResponses = savedOrder.getDetails().stream()
-                .map(detail -> new OrderItemResponseDto(
-                        detail.getPlate().getId(),
-                        new PlateDto(detail.getPlate().getId(), detail.getPlate().getName(), detail.getPlate().getDescription(), detail.getPlate().getPrice(), detail.getPlate().getImageBase64(), detail.getPlate().isActive()),
-                        detail.getQuantity(),
-                        detail.getPriceUnit(),
-                        detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())),
-                        detail.getNotes()
-                ))
+        List<OrderItemDto> itemResponses = savedOrder.getDetails().stream()
+                .map(detail -> OrderItemDto.builder()
+                        .plateId(detail.getPlate().getId())
+                        .plate(PlateDto.builder()
+                                .id(detail.getPlate().getId())
+                                .name(detail.getPlate().getName())
+                                .description(detail.getPlate().getDescription())
+                                .price(detail.getPlate().getPrice())
+                                .imageBase64(detail.getPlate().getImageBase64())
+                                .active(detail.getPlate().isActive())
+                                .build())
+                        .quantity(detail.getQuantity())
+                        .priceUnit(detail.getPriceUnit())
+                        .totalPrice(detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())))
+                        .notes(detail.getNotes())
+                        .build())
                 .collect(Collectors.toList());
 
-        return new OrderCreateResponseDto(
-                savedOrder.getId(),
-                savedOrder.getRestaurantTable().getNumber(),
-                savedOrder.getDateandtimeOrder(),
-                savedOrder.getStatus(),
-                savedOrder.getPriceTotal(),
-                itemResponses
-        );
+        return OrderDto.builder()
+                .id(savedOrder.getId())
+                .tableNumber(savedOrder.getRestaurantTable().getNumber())
+                .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
+                .status(savedOrder.getStatus())
+                .totalPrice(savedOrder.getPriceTotal())
+                .items(itemResponses)
+                .build();
     }
 
     public List<OrderDto> listOrders(String statusFilter) {
@@ -148,21 +161,28 @@ public class OrderService {
                 return Collections.emptyList();
             }
         }
-        return stream.map(o -> new OrderDto(
-                o.getId(),
-                o.getRestaurantTable().getNumber(),
-                o.getDateandtimeOrder(),
-                o.getStatus(),
-                o.getPriceTotal(),
-                o.getDetails().stream().map(d -> new OrderItemResponseDto(
-                        d.getPlate().getId(),
-                        new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                        d.getQuantity(),
-                        d.getPriceUnit(),
-                        d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                        d.getNotes()
-                )).toList()
-        )).toList();
+        return stream.map(o -> OrderDto.builder()
+                .id(o.getId())
+                .tableNumber(o.getRestaurantTable().getNumber())
+                .dateAndTimeOrder(o.getDateandtimeOrder())
+                .status(o.getStatus())
+                .totalPrice(o.getPriceTotal())
+                .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
+                        .plateId(d.getPlate().getId())
+                        .plate(PlateDto.builder()
+                                .id(d.getPlate().getId())
+                                .name(d.getPlate().getName())
+                                .description(d.getPlate().getDescription())
+                                .price(d.getPlate().getPrice())
+                                .imageBase64(d.getPlate().getImageBase64())
+                                .active(d.getPlate().isActive())
+                                .build())
+                        .quantity(d.getQuantity())
+                        .priceUnit(d.getPriceUnit())
+                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                        .notes(d.getNotes())
+                        .build()).toList())
+                .build()).toList();
     }
 
     @Transactional
@@ -189,60 +209,81 @@ public class OrderService {
             }
         }
         try {
-            orderWebSocketController.sendOrderUpdate(new OrderDto(
-                    saved.getId(),
-                    saved.getRestaurantTable().getNumber(),
-                    saved.getDateandtimeOrder(),
-                    saved.getStatus(),
-                    saved.getPriceTotal(),
-                    saved.getDetails().stream().map(d -> new OrderItemResponseDto(
-                            d.getPlate().getId(),
-                            new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                            d.getQuantity(),
-                            d.getPriceUnit(),
-                            d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                            d.getNotes()
-                    )).toList()
-            ));
+            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
+                    .id(saved.getId())
+                    .tableNumber(saved.getRestaurantTable().getNumber())
+                    .dateAndTimeOrder(saved.getDateandtimeOrder())
+                    .status(saved.getStatus())
+                    .totalPrice(saved.getPriceTotal())
+                    .items(saved.getDetails().stream().map(d -> OrderItemDto.builder()
+                            .plateId(d.getPlate().getId())
+                            .plate(PlateDto.builder()
+                                    .id(d.getPlate().getId())
+                                    .name(d.getPlate().getName())
+                                    .description(d.getPlate().getDescription())
+                                    .price(d.getPlate().getPrice())
+                                    .imageBase64(d.getPlate().getImageBase64())
+                                    .active(d.getPlate().isActive())
+                                    .build())
+                            .quantity(d.getQuantity())
+                            .priceUnit(d.getPriceUnit())
+                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                            .notes(d.getNotes())
+                            .build()).toList())
+                    .build());
         } catch (Exception ignored) {
         }
-        return new OrderDto(
-                saved.getId(),
-                saved.getRestaurantTable().getNumber(),
-                saved.getDateandtimeOrder(),
-                saved.getStatus(),
-                saved.getPriceTotal(),
-                saved.getDetails().stream().map(d -> new OrderItemResponseDto(
-                        d.getPlate().getId(),
-                        new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                        d.getQuantity(),
-                        d.getPriceUnit(),
-                        d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                        d.getNotes()
-                )).toList()
-        );
+        return OrderDto.builder()
+                .id(saved.getId())
+                .tableNumber(saved.getRestaurantTable().getNumber())
+                .dateAndTimeOrder(saved.getDateandtimeOrder())
+                .status(saved.getStatus())
+                .totalPrice(saved.getPriceTotal())
+                .items(saved.getDetails().stream().map(d -> OrderItemDto.builder()
+                        .plateId(d.getPlate().getId())
+                        .plate(PlateDto.builder()
+                                .id(d.getPlate().getId())
+                                .name(d.getPlate().getName())
+                                .description(d.getPlate().getDescription())
+                                .price(d.getPlate().getPrice())
+                                .imageBase64(d.getPlate().getImageBase64())
+                                .active(d.getPlate().isActive())
+                                .build())
+                        .quantity(d.getQuantity())
+                        .priceUnit(d.getPriceUnit())
+                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                        .notes(d.getNotes())
+                        .build()).toList())
+                .build();
     }
 
     public Optional<OrderDto> getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).map(o -> new OrderDto(
-                o.getId(),
-                o.getRestaurantTable().getNumber(),
-                o.getDateandtimeOrder(),
-                o.getStatus(),
-                o.getPriceTotal(),
-                o.getDetails().stream().map(d -> new OrderItemResponseDto(
-                        d.getPlate().getId(),
-                        new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                        d.getQuantity(),
-                        d.getPriceUnit(),
-                        d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                        d.getNotes()
-                )).toList()
-        ));
+        return orderRepository.findById(orderId).map(o -> OrderDto.builder()
+                .id(o.getId())
+                .tableNumber(o.getRestaurantTable().getNumber())
+                .dateAndTimeOrder(o.getDateandtimeOrder())
+                .status(o.getStatus())
+                .totalPrice(o.getPriceTotal())
+                .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
+                        .plateId(d.getPlate().getId())
+                        .plate(PlateDto.builder()
+                                .id(d.getPlate().getId())
+                                .name(d.getPlate().getName())
+                                .description(d.getPlate().getDescription())
+                                .price(d.getPlate().getPrice())
+                                .imageBase64(d.getPlate().getImageBase64())
+                                .active(d.getPlate().isActive())
+                                .build())
+                        .quantity(d.getQuantity())
+                        .priceUnit(d.getPriceUnit())
+                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                        .notes(d.getNotes())
+                        .build()).toList())
+                .build());
     }
 
     @Transactional
-    public OrderCreateResponseDto updateOrder(Long orderId, OrderCreateRequestDto request) {
+    public OrderDto updateOrder(Long orderId, OrderCreateRequestDto request) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado: " + orderId));
 
@@ -255,9 +296,9 @@ public class OrderService {
 
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        for (var item : request.items()) {
-            Plate plate = plateRepository.findById(item.plateId())
-                    .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado: " + item.plateId()));
+        for (var item : request.getItems()) {
+            Plate plate = plateRepository.findById(item.getPlateId())
+                    .orElseThrow(() -> new IllegalArgumentException("Plato no encontrado: " + item.getPlateId()));
 
             if (!Boolean.TRUE.equals(plate.isActive())) {
                 throw new IllegalStateException("El plato " + plate.getName() + " no está disponible");
@@ -266,13 +307,13 @@ public class OrderService {
             OrderDetails detail = new OrderDetails();
             detail.setOrder(order);
             detail.setPlate(plate);
-            detail.setQuantity(item.quantity());
+            detail.setQuantity(item.getQuantity());
             detail.setPriceUnit(plate.getPrice());
-            detail.setNotes(item.notes());
+            detail.setNotes(item.getNotes());
 
             order.addOrderDetail(detail);
 
-            BigDecimal itemTotal = plate.getPrice().multiply(BigDecimal.valueOf(item.quantity()));
+            BigDecimal itemTotal = plate.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             totalPrice = totalPrice.add(itemTotal);
         }
 
@@ -281,62 +322,83 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         try {
-            orderWebSocketController.sendOrderUpdate(new OrderDto(
-                    savedOrder.getId(),
-                    savedOrder.getRestaurantTable().getNumber(),
-                    savedOrder.getDateandtimeOrder(),
-                    savedOrder.getStatus(),
-                    savedOrder.getPriceTotal(),
-                    savedOrder.getDetails().stream().map(d -> new OrderItemResponseDto(
-                            d.getPlate().getId(),
-                            new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                            d.getQuantity(),
-                            d.getPriceUnit(),
-                            d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                            d.getNotes()
-                    )).toList()
-            ));
+            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
+                    .id(savedOrder.getId())
+                    .tableNumber(savedOrder.getRestaurantTable().getNumber())
+                    .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
+                    .status(savedOrder.getStatus())
+                    .totalPrice(savedOrder.getPriceTotal())
+                    .items(savedOrder.getDetails().stream().map(d -> OrderItemDto.builder()
+                            .plateId(d.getPlate().getId())
+                            .plate(PlateDto.builder()
+                                    .id(d.getPlate().getId())
+                                    .name(d.getPlate().getName())
+                                    .description(d.getPlate().getDescription())
+                                    .price(d.getPlate().getPrice())
+                                    .imageBase64(d.getPlate().getImageBase64())
+                                    .active(d.getPlate().isActive())
+                                    .build())
+                            .quantity(d.getQuantity())
+                            .priceUnit(d.getPriceUnit())
+                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                            .notes(d.getNotes())
+                            .build()).toList())
+                    .build());
         } catch (Exception ignored) {
         }
 
-        List<OrderItemResponseDto> itemResponses = savedOrder.getDetails().stream()
-                .map(detail -> new OrderItemResponseDto(
-                        detail.getPlate().getId(),
-                        new PlateDto(detail.getPlate().getId(), detail.getPlate().getName(), detail.getPlate().getDescription(), detail.getPlate().getPrice(), detail.getPlate().getImageBase64(), detail.getPlate().isActive()),
-                        detail.getQuantity(),
-                        detail.getPriceUnit(),
-                        detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())),
-                        detail.getNotes()
-                ))
+        List<OrderItemDto> itemResponses = savedOrder.getDetails().stream()
+                .map(detail -> OrderItemDto.builder()
+                        .plateId(detail.getPlate().getId())
+                        .plate(PlateDto.builder()
+                                .id(detail.getPlate().getId())
+                                .name(detail.getPlate().getName())
+                                .description(detail.getPlate().getDescription())
+                                .price(detail.getPlate().getPrice())
+                                .imageBase64(detail.getPlate().getImageBase64())
+                                .active(detail.getPlate().isActive())
+                                .build())
+                        .quantity(detail.getQuantity())
+                        .priceUnit(detail.getPriceUnit())
+                        .totalPrice(detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())))
+                        .notes(detail.getNotes())
+                        .build())
                 .collect(Collectors.toList());
 
-        return new OrderCreateResponseDto(
-                savedOrder.getId(),
-                savedOrder.getRestaurantTable().getNumber(),
-                savedOrder.getDateandtimeOrder(),
-                savedOrder.getStatus(),
-                savedOrder.getPriceTotal(),
-                itemResponses
-        );
+        return OrderDto.builder()
+                .id(savedOrder.getId())
+                .tableNumber(savedOrder.getRestaurantTable().getNumber())
+                .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
+                .status(savedOrder.getStatus())
+                .totalPrice(savedOrder.getPriceTotal())
+                .items(itemResponses)
+                .build();
     }
 
     public Optional<OrderDto> getPendingOrderByTableNumber(Integer tableNumber) {
         return orderRepository.findByRestaurantTable_NumberAndStatus(tableNumber, OrderStatus.PENDIENTE)
-                .map(o -> new OrderDto(
-                        o.getId(),
-                        o.getRestaurantTable().getNumber(),
-                        o.getDateandtimeOrder(),
-                        o.getStatus(),
-                        o.getPriceTotal(),
-                        o.getDetails().stream().map(d -> new OrderItemResponseDto(
-                                d.getPlate().getId(),
-                                new PlateDto(d.getPlate().getId(), d.getPlate().getName(), d.getPlate().getDescription(), d.getPlate().getPrice(), d.getPlate().getImageBase64(), d.getPlate().isActive()),
-                                d.getQuantity(),
-                                d.getPriceUnit(),
-                                d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())),
-                                d.getNotes()
-                        )).toList()
-                ));
+                .map(o -> OrderDto.builder()
+                        .id(o.getId())
+                        .tableNumber(o.getRestaurantTable().getNumber())
+                        .dateAndTimeOrder(o.getDateandtimeOrder())
+                        .status(o.getStatus())
+                        .totalPrice(o.getPriceTotal())
+                        .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
+                                .plateId(d.getPlate().getId())
+                                .plate(PlateDto.builder()
+                                        .id(d.getPlate().getId())
+                                        .name(d.getPlate().getName())
+                                        .description(d.getPlate().getDescription())
+                                        .price(d.getPlate().getPrice())
+                                        .imageBase64(d.getPlate().getImageBase64())
+                                        .active(d.getPlate().isActive())
+                                        .build())
+                                .quantity(d.getQuantity())
+                                .priceUnit(d.getPriceUnit())
+                                .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
+                                .notes(d.getNotes())
+                                .build()).toList())
+                        .build());
     }
 
     private Staff getCurrentStaff() {
