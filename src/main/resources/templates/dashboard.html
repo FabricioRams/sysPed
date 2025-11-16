@@ -31,7 +31,9 @@
         <div class="nav-tab" data-tab="platos"
              sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_JEFE','ROLE_MOZO', 'ROLE_COCINERO')">Platos
         </div>
-        <div class="nav-tab" data-tab="cocinero" sec:authorize="hasAnyRole('ROLE_COCINERO')">Cocina</div>
+        <div class="nav-tab" data-tab="cocinero"
+             sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_JEFE', 'ROLE_COCINERO')">Cocina
+        </div>
     </div>
 
     <div id="dynamicTabContent"></div>
@@ -96,7 +98,7 @@
                     const script = document.createElement('script');
                     script.id = 'dynamic-tab-script';
                     script.src = '/js/platos.js';
-                    script.onload = function() {
+                    script.onload = function () {
                         if (typeof initializePlatos === 'function') {
                             initializePlatos();
                         }
