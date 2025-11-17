@@ -31,11 +31,11 @@ public class Receipt {
     private Order order;
 
     @Column(length = 11)
-    @Pattern(regexp = "^\\d{11}$", message = "El RUC debe tener 11 dígitos numéricos", groups = {})
+    @Pattern(regexp = "^\\d{11}$", message = "El RUC debe tener 11 dígitos numéricos")
     private String ruc;
 
     @Column(length = 8)
-    @Pattern(regexp = "^\\d{8}$", message = "El DNI debe tener 8 dígitos numéricos", groups = {})
+    @Pattern(regexp = "^\\d{8}$", message = "El DNI debe tener 8 dígitos numéricos")
     private String dni;
 
     @Column(name = "customer_name", length = 120)

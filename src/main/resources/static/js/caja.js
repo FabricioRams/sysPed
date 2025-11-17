@@ -383,9 +383,7 @@ function confirmCancelOrder(orderId) {
     document.getElementById('cancelOrderId').value = orderId;
     
     const totalPrice = order.priceTotal || order.totalPrice || 0;
-    const message = `¿Está seguro que desea cancelar el pedido #${orderId} de la mesa ${order.tableNumber}?<br><strong>Total: S/ ${totalPrice.toFixed(2)}</strong>`;
-    
-    document.getElementById('cancelMessage').innerHTML = message;
+    document.getElementById('cancelMessage').innerHTML = `¿Está seguro que desea cancelar el pedido #${orderId} de la mesa ${order.tableNumber}?<br><strong>Total: S/ ${totalPrice.toFixed(2)}</strong>`;
     document.getElementById('confirmCancelModal').style.display = 'flex';
 }
 
