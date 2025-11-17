@@ -34,6 +34,9 @@
         <div class="nav-tab" data-tab="cocinero"
              sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_JEFE', 'ROLE_COCINERO')">Cocina
         </div>
+        <div class="nav-tab" data-tab="caja"
+             sec:authorize="hasAnyRole('ROLE_ADMINISTRADOR','ROLE_JEFE','ROLE_CAJERO')">Caja
+        </div>
     </div>
 
     <div id="dynamicTabContent"></div>
@@ -60,6 +63,9 @@
         }
         if (typeof cleanupCocinero === 'function') {
             cleanupCocinero();
+        }
+        if (typeof cleanupCaja === 'function') {
+            cleanupCaja();
         }
     }
 
@@ -137,6 +143,22 @@
                     script.onload = function () {
                         if (typeof initializeCocinero === 'function') {
                             initializeCocinero();
+                        }
+                    };
+                    document.body.appendChild(script);
+                });
+        } else if (tabName === 'caja') {
+            removeOldScript();
+            fetch('/dashboard/caja_fragment')
+                .then(res => res.text())
+                .then(html => {
+                    dynamicTabContent.innerHTML = html;
+                    const script = document.createElement('script');
+                    script.id = 'dynamic-tab-script';
+                    script.src = '/js/caja.js';
+                    script.onload = function () {
+                        if (typeof initCajaTabEvents === 'function') {
+                            initCajaTabEvents();
                         }
                     };
                     document.body.appendChild(script);

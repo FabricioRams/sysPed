@@ -5,6 +5,7 @@ import net.andrecarbajal.sysped.model.Category;
 import net.andrecarbajal.sysped.model.Rol;
 import net.andrecarbajal.sysped.model.Staff;
 import net.andrecarbajal.sysped.service.CategoryService;
+import net.andrecarbajal.sysped.service.OrderService;
 import net.andrecarbajal.sysped.service.RolService;
 import net.andrecarbajal.sysped.service.StaffService;
 import net.andrecarbajal.sysped.service.TableService;
@@ -26,6 +27,7 @@ public class DashboardController {
     private final RolService rolService;
     private final CategoryService categoryService;
     private final TableService tableService;
+    private final OrderService orderService;
 
     @GetMapping
     public String dashboard(Model model) {
@@ -78,5 +80,12 @@ public class DashboardController {
     @GetMapping("/cocinero_fragment")
     public String cocineroFragment() {
         return "fragments/cocinero";
+    }
+
+    @GetMapping("/caja_fragment")
+    public String cajaFragment(Model model) {
+        String statusFilter = "PENDIENTE,EN_PREPARACION,LISTO";
+        model.addAttribute("pedidos", orderService.listOrders(statusFilter));
+        return "fragments/caja";
     }
 }

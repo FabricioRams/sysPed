@@ -2,11 +2,13 @@ INSERT INTO roles(name) VALUES ('jefe');
 INSERT INTO roles(name) VALUES ('administrador');
 INSERT INTO roles(name) VALUES ('mozo');
 INSERT INTO roles(name) VALUES ('cocinero');
+INSERT INTO roles(name) VALUES ('cajero');
 
 INSERT INTO staffs(name, password, dni, rol_id, active) VALUE ('Juan Perez', '$2a$10$4jjG.2p6YihIO6fJvRBIhu/c/MkktCruhtUxiuFzT1.iU78i26xBK', '00000000', 1, true);
 INSERT INTO staffs(name, password, dni, rol_id, active) VALUE ('Maria Gomez', '$2a$10$4jjG.2p6YihIO6fJvRBIhu/c/MkktCruhtUxiuFzT1.iU78i26xBK', '00000001', 2, true);
 INSERT INTO staffs(name, password, dni, rol_id, active) VALUE ('Carlos Lopez', '$2a$10$4jjG.2p6YihIO6fJvRBIhu/c/MkktCruhtUxiuFzT1.iU78i26xBK', '00000010', 3, true);
 INSERT INTO staffs(name, password, dni, rol_id, active) VALUE ('Ana Martinez', '$2a$10$4jjG.2p6YihIO6fJvRBIhu/c/MkktCruhtUxiuFzT1.iU78i26xBK', '00000011', 4, true);
+INSERT INTO staffs(name, password, dni, rol_id, active) VALUE ('Luis Rodriguez', '$2a$10$4jjG.2p6YihIO6fJvRBIhu/c/MkktCruhtUxiuFzT1.iU78i26xBK', '00000100', 5, true);
 
 INSERT INTO categories (name) VALUES ('Plato de carta');
 INSERT INTO categories (name) VALUES ('Menu');

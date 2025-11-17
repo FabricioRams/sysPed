@@ -1,0 +1,33 @@
+<div id="cajaTab">
+    <h2>Caja - Gestión de Pagos</h2>
+    <div class="caja-legend">
+        <div><strong>Leyenda:</strong></div>
+        <div class="order-status-badge badge-pendiente">Pendiente</div>
+        <div class="order-status-badge badge-en-preparacion">En preparación</div>
+        <div class="order-status-badge badge-listo">Listo</div>
+    </div>
+
+    <div id="cajaOrdersContainer">
+        <p>Cargando pedidos...</p>
+    </div>
+</div>
+
+<div class="modal-overlay" id="confirmCajaActionModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="confirmActionTitle">Confirmar acción</h3>
+            <button class="modal-close" id="closeConfirmModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalCajaOrderId">
+            <input type="hidden" id="modalCajaAction">
+            <p id="confirmActionMessage"></p>
+            <div style="margin-top:12px; text-align:right; display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn btn-secondary" id="cancelConfirmAction">Cancelar</button>
+                <button class="btn btn-primary" id="confirmActionButton">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/caja.js}"></script>

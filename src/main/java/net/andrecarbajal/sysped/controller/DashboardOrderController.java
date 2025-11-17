@@ -117,4 +117,45 @@ public class DashboardOrderController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/caja/change-status")
+    public ResponseEntity<Object> changeCajaOrderStatus(@RequestBody OrderStatusChangeRequestDto body) {
+        try {
+            OrderStatus newStatus = OrderStatus.valueOf(body.getStatus());
+            if (newStatus != OrderStatus.CANCELADO && newStatus != OrderStatus.PAGADO) {
+                return ResponseEntity.badRequest().body("Estado inválido para caja. Solo se permite CANCELADO o PAGADO");
+            }
+
+            Long orderId = body.getOrderId();
+            if (orderId == null) {
+                return ResponseEntity.badRequest().body("ID de pedido requerido");
+            }
+
+            OrderDto currentOrder = orderService.getOrderById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado: " + orderId));
+
+            OrderStatus currentStatus = currentOrder.getStatus();
+
+            if (newStatus == OrderStatus.PAGADO && currentStatus != OrderStatus.LISTO) {
+                return ResponseEntity.status(409).body("Solo se pueden marcar como PAGADO los pedidos en estado LISTO");
+            }
+
+            if (newStatus == OrderStatus.CANCELADO &&
+                    currentStatus != OrderStatus.PENDIENTE &&
+                    currentStatus != OrderStatus.EN_PREPARACION &&
+                    currentStatus != OrderStatus.LISTO) {
+                return ResponseEntity.status(409).body("No se puede cancelar un pedido en estado " + currentStatus);
+            }
+
+            OrderDto updated = orderService.updateOrderStatus(orderId, newStatus);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Estado inválido: " + body.getStatus());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : "Error interno al actualizar pedido";
+            return ResponseEntity.status(500).body(msg);
+        }
+    }
 }
