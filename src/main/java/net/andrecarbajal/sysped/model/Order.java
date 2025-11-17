@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,13 +51,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetails> details = new ArrayList<>();
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Receipt receipt;
+
     public void addOrderDetail(OrderDetails detail) {
         details.add(detail);
         detail.setOrder(this);
-    }
-
-    public void removeOrderDetail(OrderDetails detail) {
-        details.remove(detail);
-        detail.setOrder(null);
     }
 }

@@ -1486,3 +1486,201 @@ div#dynamicTabContent {
         gap: 12px;
     }
 }
+
+/* ========================================
+   ESTILOS PARA MÓDULO DE CAJA - MODALES DE PAGO
+   ======================================== */
+
+/* Modal de Pago */
+.modal-payment {
+    max-width: 600px;
+}
+
+.payment-order-info {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.payment-order-info p {
+    margin: 4px 0;
+}
+
+.receipt-type-selector {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.radio-label input[type="radio"] {
+    cursor: pointer;
+}
+
+.receipt-fields {
+    margin-top: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-azul);
+}
+
+.input-with-prefix {
+    display: flex;
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.input-prefix {
+    background: #f5f5f5;
+    padding: 10px 12px;
+    border-right: 1px solid var(--color-borde);
+    font-weight: 600;
+    color: #666;
+}
+
+.input-with-prefix input {
+    border: none;
+    flex: 1;
+}
+
+.field-error {
+    color: var(--color-rojo);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: none;
+}
+
+.input-error {
+    border-color: var(--color-rojo) !important;
+}
+
+.payment-summary {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 6px;
+    margin-top: 16px;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.summary-total {
+    border-top: 2px solid var(--color-borde);
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 1.1rem;
+    color: var(--color-verde);
+}
+
+/* Modal de Éxito */
+.modal-success {
+    max-width: 500px;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: var(--color-verde);
+    margin: 16px 0;
+    font-weight: bold;
+}
+
+.success-message {
+    font-size: 1.1rem;
+    margin: 16px 0;
+    color: var(--color-texto);
+}
+
+.receipt-info {
+    background: #f5f5f5;
+    padding: 16px;
+    border-radius: 6px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.receipt-info p {
+    margin: 8px 0;
+}
+
+/* Botones */
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-primary {
+    background: var(--color-azul);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1976d2;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-payment,
+    .modal-success {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .receipt-type-selector {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .payment-summary {
+        font-size: 0.9rem;
+    }
+    
+    .summary-line {
+        font-size: 0.85rem;
+    }
+}
