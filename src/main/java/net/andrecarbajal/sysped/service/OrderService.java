@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.controller.OrderWebSocketController;
 import net.andrecarbajal.sysped.dto.OrderCreateRequestDto;
 import net.andrecarbajal.sysped.dto.OrderDto;
-import net.andrecarbajal.sysped.dto.OrderItemDto;
-import net.andrecarbajal.sysped.dto.PlateDto;
+import net.andrecarbajal.sysped.mapper.OrderMapper;
 import net.andrecarbajal.sysped.model.Order;
 import net.andrecarbajal.sysped.model.OrderDetails;
 import net.andrecarbajal.sysped.model.OrderStatus;
@@ -28,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -88,57 +86,11 @@ public class OrderService {
         tableService.updateTableStatus(request.getTableNumber(), TableStatus.ESPERANDO_PEDIDO);
 
         try {
-            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
-                    .id(savedOrder.getId())
-                    .tableNumber(savedOrder.getRestaurantTable().getNumber())
-                    .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
-                    .status(savedOrder.getStatus())
-                    .totalPrice(savedOrder.getPriceTotal())
-                    .items(savedOrder.getDetails().stream().map(d -> OrderItemDto.builder()
-                            .plateId(d.getPlate().getId())
-                            .plate(PlateDto.builder()
-                                    .id(d.getPlate().getId())
-                                    .name(d.getPlate().getName())
-                                    .description(d.getPlate().getDescription())
-                                    .price(d.getPlate().getPrice())
-                                    .imageBase64(d.getPlate().getImageBase64())
-                                    .active(d.getPlate().isActive())
-                                    .build())
-                            .quantity(d.getQuantity())
-                            .priceUnit(d.getPriceUnit())
-                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                            .notes(d.getNotes())
-                            .build()).toList())
-                    .build());
+            orderWebSocketController.sendOrderUpdate(OrderMapper.toDto(savedOrder));
         } catch (Exception ignored) {
         }
 
-        List<OrderItemDto> itemResponses = savedOrder.getDetails().stream()
-                .map(detail -> OrderItemDto.builder()
-                        .plateId(detail.getPlate().getId())
-                        .plate(PlateDto.builder()
-                                .id(detail.getPlate().getId())
-                                .name(detail.getPlate().getName())
-                                .description(detail.getPlate().getDescription())
-                                .price(detail.getPlate().getPrice())
-                                .imageBase64(detail.getPlate().getImageBase64())
-                                .active(detail.getPlate().isActive())
-                                .build())
-                        .quantity(detail.getQuantity())
-                        .priceUnit(detail.getPriceUnit())
-                        .totalPrice(detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())))
-                        .notes(detail.getNotes())
-                        .build())
-                .collect(Collectors.toList());
-
-        return OrderDto.builder()
-                .id(savedOrder.getId())
-                .tableNumber(savedOrder.getRestaurantTable().getNumber())
-                .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
-                .status(savedOrder.getStatus())
-                .totalPrice(savedOrder.getPriceTotal())
-                .items(itemResponses)
-                .build();
+        return OrderMapper.toDto(savedOrder);
     }
 
     public List<OrderDto> listOrders(String statusFilter) {
@@ -150,10 +102,7 @@ public class OrderService {
             for (String p : parts) {
                 String trimmed = p.trim();
                 if (trimmed.isEmpty()) continue;
-                try {
-                    allowed.add(OrderStatus.valueOf(trimmed));
-                } catch (IllegalArgumentException e) {
-                }
+                allowed.add(OrderStatus.valueOf(trimmed));
             }
             if (!allowed.isEmpty()) {
                 stream = stream.filter(o -> allowed.contains(o.getStatus()));
@@ -161,28 +110,7 @@ public class OrderService {
                 return Collections.emptyList();
             }
         }
-        return stream.map(o -> OrderDto.builder()
-                .id(o.getId())
-                .tableNumber(o.getRestaurantTable().getNumber())
-                .dateAndTimeOrder(o.getDateandtimeOrder())
-                .status(o.getStatus())
-                .totalPrice(o.getPriceTotal())
-                .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
-                        .plateId(d.getPlate().getId())
-                        .plate(PlateDto.builder()
-                                .id(d.getPlate().getId())
-                                .name(d.getPlate().getName())
-                                .description(d.getPlate().getDescription())
-                                .price(d.getPlate().getPrice())
-                                .imageBase64(d.getPlate().getImageBase64())
-                                .active(d.getPlate().isActive())
-                                .build())
-                        .quantity(d.getQuantity())
-                        .priceUnit(d.getPriceUnit())
-                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                        .notes(d.getNotes())
-                        .build()).toList())
-                .build()).toList();
+        return stream.map(OrderMapper::toDto).toList();
     }
 
     @Transactional
@@ -209,78 +137,15 @@ public class OrderService {
             }
         }
         try {
-            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
-                    .id(saved.getId())
-                    .tableNumber(saved.getRestaurantTable().getNumber())
-                    .dateAndTimeOrder(saved.getDateandtimeOrder())
-                    .status(saved.getStatus())
-                    .totalPrice(saved.getPriceTotal())
-                    .items(saved.getDetails().stream().map(d -> OrderItemDto.builder()
-                            .plateId(d.getPlate().getId())
-                            .plate(PlateDto.builder()
-                                    .id(d.getPlate().getId())
-                                    .name(d.getPlate().getName())
-                                    .description(d.getPlate().getDescription())
-                                    .price(d.getPlate().getPrice())
-                                    .imageBase64(d.getPlate().getImageBase64())
-                                    .active(d.getPlate().isActive())
-                                    .build())
-                            .quantity(d.getQuantity())
-                            .priceUnit(d.getPriceUnit())
-                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                            .notes(d.getNotes())
-                            .build()).toList())
-                    .build());
+            orderWebSocketController.sendOrderUpdate(OrderMapper.toDto(saved));
         } catch (Exception ignored) {
         }
-        return OrderDto.builder()
-                .id(saved.getId())
-                .tableNumber(saved.getRestaurantTable().getNumber())
-                .dateAndTimeOrder(saved.getDateandtimeOrder())
-                .status(saved.getStatus())
-                .totalPrice(saved.getPriceTotal())
-                .items(saved.getDetails().stream().map(d -> OrderItemDto.builder()
-                        .plateId(d.getPlate().getId())
-                        .plate(PlateDto.builder()
-                                .id(d.getPlate().getId())
-                                .name(d.getPlate().getName())
-                                .description(d.getPlate().getDescription())
-                                .price(d.getPlate().getPrice())
-                                .imageBase64(d.getPlate().getImageBase64())
-                                .active(d.getPlate().isActive())
-                                .build())
-                        .quantity(d.getQuantity())
-                        .priceUnit(d.getPriceUnit())
-                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                        .notes(d.getNotes())
-                        .build()).toList())
-                .build();
+        return OrderMapper.toDto(saved);
     }
 
     @Transactional(readOnly = true)
     public Optional<OrderDto> getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).map(o -> OrderDto.builder()
-                .id(o.getId())
-                .tableNumber(o.getRestaurantTable().getNumber())
-                .dateAndTimeOrder(o.getDateandtimeOrder())
-                .status(o.getStatus())
-                .totalPrice(o.getPriceTotal())
-                .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
-                        .plateId(d.getPlate().getId())
-                        .plate(PlateDto.builder()
-                                .id(d.getPlate().getId())
-                                .name(d.getPlate().getName())
-                                .description(d.getPlate().getDescription())
-                                .price(d.getPlate().getPrice())
-                                .imageBase64(d.getPlate().getImageBase64())
-                                .active(d.getPlate().isActive())
-                                .build())
-                        .quantity(d.getQuantity())
-                        .priceUnit(d.getPriceUnit())
-                        .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                        .notes(d.getNotes())
-                        .build()).toList())
-                .build());
+        return orderRepository.findById(orderId).map(OrderMapper::toDto);
     }
 
     @Transactional
@@ -292,7 +157,6 @@ public class OrderService {
             throw new IllegalStateException("Solo se pueden editar pedidos pendientes");
         }
 
-        // Clear existing details
         order.getDetails().clear();
 
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -323,83 +187,16 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         try {
-            orderWebSocketController.sendOrderUpdate(OrderDto.builder()
-                    .id(savedOrder.getId())
-                    .tableNumber(savedOrder.getRestaurantTable().getNumber())
-                    .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
-                    .status(savedOrder.getStatus())
-                    .totalPrice(savedOrder.getPriceTotal())
-                    .items(savedOrder.getDetails().stream().map(d -> OrderItemDto.builder()
-                            .plateId(d.getPlate().getId())
-                            .plate(PlateDto.builder()
-                                    .id(d.getPlate().getId())
-                                    .name(d.getPlate().getName())
-                                    .description(d.getPlate().getDescription())
-                                    .price(d.getPlate().getPrice())
-                                    .imageBase64(d.getPlate().getImageBase64())
-                                    .active(d.getPlate().isActive())
-                                    .build())
-                            .quantity(d.getQuantity())
-                            .priceUnit(d.getPriceUnit())
-                            .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                            .notes(d.getNotes())
-                            .build()).toList())
-                    .build());
+            orderWebSocketController.sendOrderUpdate(OrderMapper.toDto(savedOrder));
         } catch (Exception ignored) {
         }
 
-        List<OrderItemDto> itemResponses = savedOrder.getDetails().stream()
-                .map(detail -> OrderItemDto.builder()
-                        .plateId(detail.getPlate().getId())
-                        .plate(PlateDto.builder()
-                                .id(detail.getPlate().getId())
-                                .name(detail.getPlate().getName())
-                                .description(detail.getPlate().getDescription())
-                                .price(detail.getPlate().getPrice())
-                                .imageBase64(detail.getPlate().getImageBase64())
-                                .active(detail.getPlate().isActive())
-                                .build())
-                        .quantity(detail.getQuantity())
-                        .priceUnit(detail.getPriceUnit())
-                        .totalPrice(detail.getPriceUnit().multiply(BigDecimal.valueOf(detail.getQuantity())))
-                        .notes(detail.getNotes())
-                        .build())
-                .collect(Collectors.toList());
-
-        return OrderDto.builder()
-                .id(savedOrder.getId())
-                .tableNumber(savedOrder.getRestaurantTable().getNumber())
-                .dateAndTimeOrder(savedOrder.getDateandtimeOrder())
-                .status(savedOrder.getStatus())
-                .totalPrice(savedOrder.getPriceTotal())
-                .items(itemResponses)
-                .build();
+        return OrderMapper.toDto(savedOrder);
     }
 
     public Optional<OrderDto> getPendingOrderByTableNumber(Integer tableNumber) {
         return orderRepository.findByRestaurantTable_NumberAndStatus(tableNumber, OrderStatus.PENDIENTE)
-                .map(o -> OrderDto.builder()
-                        .id(o.getId())
-                        .tableNumber(o.getRestaurantTable().getNumber())
-                        .dateAndTimeOrder(o.getDateandtimeOrder())
-                        .status(o.getStatus())
-                        .totalPrice(o.getPriceTotal())
-                        .items(o.getDetails().stream().map(d -> OrderItemDto.builder()
-                                .plateId(d.getPlate().getId())
-                                .plate(PlateDto.builder()
-                                        .id(d.getPlate().getId())
-                                        .name(d.getPlate().getName())
-                                        .description(d.getPlate().getDescription())
-                                        .price(d.getPlate().getPrice())
-                                        .imageBase64(d.getPlate().getImageBase64())
-                                        .active(d.getPlate().isActive())
-                                        .build())
-                                .quantity(d.getQuantity())
-                                .priceUnit(d.getPriceUnit())
-                                .totalPrice(d.getPriceUnit().multiply(BigDecimal.valueOf(d.getQuantity())))
-                                .notes(d.getNotes())
-                                .build()).toList())
-                        .build());
+                .map(OrderMapper::toDto);
     }
 
     private Staff getCurrentStaff() {
