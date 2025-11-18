@@ -2,12 +2,14 @@ package net.andrecarbajal.sysped.service;
 
 import lombok.RequiredArgsConstructor;
 import net.andrecarbajal.sysped.controller.OrderWebSocketController;
+import net.andrecarbajal.sysped.controller.TableStatusWebSocketController;
 import net.andrecarbajal.sysped.dto.ReceiptCreateRequestDto;
 import net.andrecarbajal.sysped.dto.ReceiptResponseDto;
 import net.andrecarbajal.sysped.mapper.OrderMapper;
 import net.andrecarbajal.sysped.model.Order;
 import net.andrecarbajal.sysped.model.OrderStatus;
 import net.andrecarbajal.sysped.model.Receipt;
+import net.andrecarbajal.sysped.model.TableStatus;
 import net.andrecarbajal.sysped.repository.OrderRepository;
 import net.andrecarbajal.sysped.repository.ReceiptRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final OrderRepository orderRepository;
     private final OrderWebSocketController orderWebSocketController;
+    private final TableService tableService;
+    private final TableStatusWebSocketController tableStatusWebSocketController;
 
     @Transactional
     public ReceiptResponseDto createReceipt(Long orderId, ReceiptCreateRequestDto request) {
@@ -73,6 +77,8 @@ public class ReceiptService {
         orderRepository.save(order);
 
         orderWebSocketController.sendOrderUpdate(OrderMapper.toDto(order));
+
+        tableService.updateTableStatus(order.getRestaurantTable().getNumber(), TableStatus.DISPONIBLE);
 
         return toResponseDto(receipt);
     }
