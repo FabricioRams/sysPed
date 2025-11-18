@@ -28,7 +28,6 @@ public class ReceiptService {
     private final OrderRepository orderRepository;
     private final OrderWebSocketController orderWebSocketController;
     private final TableService tableService;
-    private final TableStatusWebSocketController tableStatusWebSocketController;
 
     @Transactional
     public ReceiptResponseDto createReceipt(Long orderId, ReceiptCreateRequestDto request) {
