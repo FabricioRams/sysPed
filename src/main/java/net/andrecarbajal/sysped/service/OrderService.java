@@ -194,8 +194,9 @@ public class OrderService {
         return OrderMapper.toDto(savedOrder);
     }
 
-    public Optional<OrderDto> getPendingOrderByTableNumber(Integer tableNumber) {
-        return orderRepository.findByRestaurantTable_NumberAndStatus(tableNumber, OrderStatus.PENDIENTE)
+    public Optional<OrderDto> getActiveOrderByTableNumber(Integer tableNumber) {
+        Set<OrderStatus> activeStatuses = Set.of(OrderStatus.PENDIENTE, OrderStatus.EN_PREPARACION, OrderStatus.LISTO);
+        return orderRepository.findByRestaurantTable_NumberAndStatusIn(tableNumber, activeStatuses)
                 .map(OrderMapper::toDto);
     }
 

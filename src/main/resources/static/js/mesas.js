@@ -640,7 +640,7 @@ function openViewOrderModal(tableNumber) {
             if (response.ok) {
                 return response.json();
             } else if (response.status === 404) {
-                throw new Error('No se encontró un pedido pendiente para esta mesa');
+                throw new Error('No se encontró un pedido activo para esta mesa');
             } else {
                 throw new Error('Error al cargar el pedido');
             }

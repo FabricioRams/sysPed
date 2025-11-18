@@ -87,7 +87,7 @@ public class DashboardOrderController {
     @GetMapping("/table/{tableNumber}")
     public ResponseEntity<OrderDto> getPendingOrderByTable(@PathVariable Integer tableNumber) {
         try {
-            return orderService.getPendingOrderByTableNumber(tableNumber)
+            return orderService.getActiveOrderByTableNumber(tableNumber)
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {

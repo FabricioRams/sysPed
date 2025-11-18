@@ -1663,6 +1663,48 @@ div#dynamicTabContent {
     cursor: not-allowed;
 }
 
+.order-card {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: #fff;
+}
+
+.order-pendiente {
+    border-left: 6px solid #f0ad4e;
+}
+
+.order-en-preparacion {
+    border-left: 6px solid #5bc0de;
+}
+
+.order-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #222;
+    margin-left: 8px;
+}
+
+.badge-pendiente {
+    background: #f7e6c8;
+    color: #6f4a00;
+}
+
+.badge-en-preparacion {
+    background: #dbeeff;
+    color: #003a70;
+}
+
+.cocinero-legend {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .modal-payment,
@@ -1670,16 +1712,16 @@ div#dynamicTabContent {
         width: 95%;
         max-width: none;
     }
-    
+
     .receipt-type-selector {
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .payment-summary {
         font-size: 0.9rem;
     }
-    
+
     .summary-line {
         font-size: 0.85rem;
     }

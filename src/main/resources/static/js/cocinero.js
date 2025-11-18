@@ -34,10 +34,10 @@ function updateOrderView(orderDto) {
     } else {
         container.insertAdjacentHTML('beforeend', cardHtml);
     }
-    
+
     const newCard = document.getElementById(`order-card-${orderDto.id}`);
     const btn = newCard.querySelector('.change-status-btn');
-    if(btn){
+    if (btn) {
         btn.addEventListener('click', () => openChangeOrderModal(orderDto));
     }
 }
@@ -84,17 +84,21 @@ function openChangeOrderModal(order) {
 
 function getAllowedStatusesForOrder(current) {
     switch (current) {
-        case 'PENDIENTE': return ['EN_PREPARACION','CANCELADO'];
-        case 'EN_PREPARACION': return ['LISTO','CANCELADO'];
-        case 'LISTO': return ['PAGADO'];
-        default: return [];
+        case 'PENDIENTE':
+            return ['EN_PREPARACION', 'CANCELADO'];
+        case 'EN_PREPARACION':
+            return ['LISTO', 'CANCELADO'];
+        case 'LISTO':
+            return ['PAGADO'];
+        default:
+            return [];
     }
 }
 
 function changeOrderStatus(orderId, newStatus) {
     fetch(`/dashboard/orders/${orderId}/status`, {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({status: newStatus})
     }).then(async resp => {
         const text = await resp.text();
@@ -113,7 +117,9 @@ function changeOrderStatus(orderId, newStatus) {
     }).then(updated => {
         closeChangeOrderModal();
         refreshOrders(true);
-    }).catch(err => { alert('No se pudo actualizar: ' + err.message); });
+    }).catch(err => {
+        alert('No se pudo actualizar: ' + err.message);
+    });
 }
 
 function createOrderCard(o) {
@@ -130,12 +136,22 @@ function createOrderCard(o) {
 
     return `
         <div class="order-card ${o.status === 'PENDIENTE' ? 'order-pendiente' : ''} ${o.status === 'EN_PREPARACION' ? 'order-en-preparacion' : ''}" id="order-card-${o.id}">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div><strong>#${o.id}</strong> - Mesa ${o.tableNumber} - <em>${o.dateAndTimeOrder}</em></div>
-                <div>${estadoBadge}</div>
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <div>
+                    <strong>Pedido #${o.id}</strong>
+                    ${estadoBadge}
+                    <div style="margin-top:4px; color:#666;">Mesa: ${o.tableNumber}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.9em; color:#666;">${o.dateAndTimeOrder}</div>
+                </div>
             </div>
-            <div style="margin-top:8px;">Items:</div>
-            <ul>${itemsHtml}</ul>
+            <div style="margin-top:8px;">
+                <strong>Items:</strong>
+                <ul style="margin:4px 0; padding-left:20px;">
+                    ${itemsHtml}
+                </ul>
+            </div>
             <div style="margin-top:8px;">
                 <button class="btn btn-secondary change-status-btn">Cambiar estado</button>
             </div>
@@ -151,11 +167,11 @@ function renderOrders(list) {
         return;
     }
     container.innerHTML = list.map(createOrderCard).join('');
-    
+
     list.forEach(o => {
         const card = document.getElementById(`order-card-${o.id}`);
         const btn = card.querySelector('.change-status-btn');
-        if(btn){
+        if (btn) {
             btn.addEventListener('click', () => openChangeOrderModal(o));
         }
     });
@@ -181,7 +197,7 @@ function initializeCocinero() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         if (!cocineroInitialized) initializeCocinero();
     });
 } else {
