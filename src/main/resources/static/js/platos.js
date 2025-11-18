@@ -45,7 +45,7 @@ function initPlatoCardToggleEvents() {
         if (isCocinero) {
             const currentActive = card.getAttribute('data-active') === 'true';
             const newActive = !currentActive;
-            if (!confirm('¿Deseas guardar el cambio?')) {
+            if (!confirm('¿Deseas cambiar el cambio?')) {
                 return;
             }
             card.style.pointerEvents = 'none';
