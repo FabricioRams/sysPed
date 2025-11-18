@@ -28,7 +28,7 @@ public class Plate {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 4, scale = 2)
     private BigDecimal price;
 
     @Column(name = "image_base64", columnDefinition = "LONGTEXT")

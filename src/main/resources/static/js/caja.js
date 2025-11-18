@@ -4,7 +4,6 @@ let cajaRefreshInterval = null;
 let currentPaymentOrder = null;
 
 function initCajaTabEvents() {
-    // Event listeners para modal de cancelación
     const closeCancelModal = document.getElementById('closeCancelModal');
     const cancelCancelBtn = document.getElementById('cancelCancelAction');
     const confirmCancelBtn = document.getElementById('confirmCancelAction');
@@ -13,7 +12,6 @@ function initCajaTabEvents() {
     if (cancelCancelBtn) cancelCancelBtn.addEventListener('click', closeCancelModal);
     if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', executeCancelOrder);
 
-    // Event listeners para modal de pago
     const closePaymentModalBtn = document.getElementById('closePaymentModal');
     const cancelPaymentBtn = document.getElementById('cancelPayment');
     const confirmPaymentBtn = document.getElementById('confirmPayment');
@@ -22,7 +20,6 @@ function initCajaTabEvents() {
     if (cancelPaymentBtn) cancelPaymentBtn.addEventListener('click', closePaymentModal);
     if (confirmPaymentBtn) confirmPaymentBtn.addEventListener('click', confirmPayment);
 
-    // Event listener para cambio de tipo de comprobante
     const receiptTypeBoleta = document.getElementById('receiptTypeBoleta');
     const receiptTypeFactura = document.getElementById('receiptTypeFactura');
 
@@ -46,13 +43,11 @@ function initCajaTabEvents() {
         });
     }
 
-    // Event listener para actualizar resumen en tiempo real
     const discountInput = document.getElementById('paymentDiscount');
     if (discountInput) {
         discountInput.addEventListener('input', updatePaymentSummary);
     }
 
-    // Event listeners para modal de éxito
     const closeSuccessModalBtn = document.getElementById('closeSuccessModal');
     const viewReceiptBtn = document.getElementById('viewReceipt');
     const printReceiptBtn = document.getElementById('printReceipt');
@@ -166,7 +161,6 @@ function openPaymentModal(orderId) {
 
     currentPaymentOrder = order;
 
-    // Establecer valores iniciales
     document.getElementById('paymentOrderId').value = orderId;
     document.getElementById('paymentTableNumber').textContent = order.tableNumber;
     document.getElementById('paymentOrderTotal').textContent = (order.priceTotal || order.totalPrice || 0).toFixed(2);
@@ -178,18 +172,15 @@ function openPaymentModal(orderId) {
 }
 
 function resetPaymentForm() {
-    // Seleccionar radio button BOLETA
     document.getElementById('receiptTypeBoleta').checked = true;
     document.getElementById('receiptTypeFactura').checked = false;
 
-    // Limpiar todos los campos
     document.getElementById('customerDni').value = '';
     document.getElementById('customerName').value = '';
     document.getElementById('customerRuc').value = '';
     document.getElementById('customerRazonSocial').value = '';
     document.getElementById('paymentDiscount').value = '0';
 
-    // Mostrar campos de boleta, ocultar campos de factura
     document.getElementById('boletaFields').style.display = 'block';
     document.getElementById('facturaFields').style.display = 'none';
 
@@ -218,7 +209,6 @@ function validatePaymentForm() {
     const descuento = parseFloat(document.getElementById('paymentDiscount').value) || 0;
     const totalPedido = currentPaymentOrder.priceTotal || currentPaymentOrder.totalPrice || 0;
 
-    // Validar descuento
     if (descuento < 0) {
         showFieldError('discountError', 'El descuento no puede ser negativo');
         return false;
@@ -444,7 +434,6 @@ function showFieldError(errorId, message) {
         errorElement.textContent = message;
         errorElement.style.display = 'block';
 
-        // Agregar clase de error al input correspondiente
         const inputId = errorId.replace('Error', '');
         const inputElement = document.getElementById(inputId) ||
             document.getElementById('customer' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
@@ -489,7 +478,6 @@ function initializeCaja() {
     }
 }
 
-// Exponer funciones globalmente
 window.openPaymentModal = openPaymentModal;
 window.confirmCancelOrder = confirmCancelOrder;
 

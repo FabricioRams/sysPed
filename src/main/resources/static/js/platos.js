@@ -114,20 +114,6 @@ function connectPlateStatusWebSocket() {
     });
 }
 
-function disconnectPlateStatusWebSocket() {
-    if (stompClient !== null && isPlateStompConnected) {
-        try {
-            stompClient.disconnect(function () {
-                console.log('WebSocket de platos desconectado');
-            });
-            isPlateStompConnected = false;
-            stompClient = null;
-        } catch (e) {
-            console.warn('Error al desconectar WebSocket:', e);
-        }
-    }
-}
-
 function updatePlateStatusInView(plate) {
     const card = document.querySelector(`.plato-card[data-plate-id="${plate.id}"]`);
     if (card) {
@@ -254,7 +240,64 @@ function initPlatoModalEvents() {
     form.addEventListener('submit', form._submitHandler);
 }
 
+function validateForm(){
+    clearAllErrors();
+
+    const precio = parseFloat(document.getElementById('platePrice').value) || 0;
+
+    if (precio < 0){
+        showFieldError('platePriceError', 'El precio no puede ser negativo.');
+        return false;
+    }
+
+    const decimalPart = precio.toString().split('.')[1];
+    if (decimalPart && decimalPart.length > 2){
+        showFieldError('platePriceError', 'El precio no puede tener más de dos decimales.');
+        return false;
+    }
+
+    if (precio > 99.99){
+        showFieldError('platePriceError', 'El precio no puede ser mayor a 99.99.');
+        return false;
+    }
+
+    return true;
+}
+
+function clearAllErrors() {
+    const errorElements = document.querySelectorAll('.field-error');
+    errorElements.forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+    });
+
+    const inputElements = document.querySelectorAll('.input-error');
+    inputElements.forEach(el => {
+        el.classList.remove('input-error');
+    });
+}
+
+function showFieldError(errorId, message) {
+    const errorElement = document.getElementById(errorId);
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+
+        // Agregar clase de error al input correspondiente
+        const inputId = errorId.replace('Error', '');
+        const inputElement = document.getElementById(inputId) ||
+            document.getElementById('customer' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
+        if (inputElement) {
+            inputElement.classList.add('input-error');
+        }
+    }
+}
+
 function savePlateUpdate() {
+    if (!validateForm()) {
+        return;
+    }
+
     const form = document.getElementById('updatePlateForm');
     const plateId = form.getAttribute('data-plate-id');
     const formData = new FormData(form);
