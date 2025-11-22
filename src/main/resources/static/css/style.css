@@ -621,7 +621,55 @@ body {
     padding: 24px;
 }
 
-/* Media query específica para módulo de mesas con sidebar */
+/* Media query específica para tablets - Módulo de mesas */
+@media (max-width: 1024px) and (min-width: 601px) {
+    .wrap {
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .sidebar {
+        width: 220px;
+        padding: 10px;
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
+    }
+
+    .sidebar h3 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .status-item {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+    }
+
+    .mesas-container {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .mesa {
+        height: auto;
+        aspect-ratio: 1;
+        min-height: 100px;
+        padding: 10px;
+    }
+
+    .mesa-numero {
+        font-size: 1.2rem;
+    }
+
+    .mesa-estado {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+}
+
+/* Media query para móviles y tablets verticales */
 @media (max-width: 900px) {
     .wrap {
         flex-direction: column;
