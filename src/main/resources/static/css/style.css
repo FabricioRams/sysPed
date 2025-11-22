@@ -621,62 +621,13 @@ body {
     padding: 24px;
 }
 
-/* Media query específica para tablets - Módulo de mesas */
-@media (max-width: 1024px) and (min-width: 601px) {
-    .wrap {
-        gap: 12px;
-        padding: 12px;
-    }
-
-    .sidebar {
-        width: 220px;
-        padding: 10px;
-        overflow-y: auto;
-        max-height: calc(100vh - 180px);
-    }
-
-    .sidebar h3 {
-        font-size: 0.95rem;
-        margin-bottom: 8px;
-    }
-
-    .status-item {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-        margin-bottom: 5px;
-    }
-
-    .mesas-container {
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-        gap: 10px;
-        padding: 12px;
-    }
-
-    .mesa {
-        height: auto;
-        aspect-ratio: 1;
-        min-height: 100px;
-        padding: 10px;
-    }
-
-    .mesa-numero {
-        font-size: 1.2rem;
-    }
-
-    .mesa-estado {
-        font-size: 0.75rem;
-        padding: 3px 6px;
-    }
-}
-
-/* Media query para móviles y tablets verticales */
 @media (max-width: 900px) {
     .wrap {
         flex-direction: column;
         padding: 12px;
     }
 
-    .wrap .sidebar {
+    .sidebar {
         width: 100%;
     }
 
@@ -689,6 +640,11 @@ body {
         border-top: 1px solid #ddd;
         padding-left: 0;
         padding-top: 20px;
+    }
+
+    .mesas-container {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
     }
 }
 
@@ -1016,17 +972,6 @@ body {
     display: flex;
     height: 100vh;
     flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-}
-
-.app-container > * {
-    flex-shrink: 0;
-}
-
-.app-container #dynamicTabContent {
-    flex: 1;
-    overflow: auto;
 }
 
 .header {
@@ -1062,12 +1007,6 @@ body {
     display: flex;
     background: #34495e;
     padding: 0 20px;
-    min-height: 50px;
-    align-items: center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .nav-tab {
@@ -1075,13 +1014,6 @@ body {
     color: white;
     cursor: pointer;
     border-bottom: 3px solid transparent;
-    white-space: nowrap;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.nav-tab:hover {
-    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-tab.active {
@@ -1268,8 +1200,6 @@ div#dynamicTabContent {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    flex: 1;
 }
 
 .crud-table {
@@ -1539,65 +1469,143 @@ div#dynamicTabContent {
     margin-top: 8px;
 }
 
-/* Tablets (768px - 1024px) */
-@media (max-width: 1024px) {
-    .mesas-container {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
+/* ========================================
+   RESPONSIVE DESIGN - TABLET OPTIMIZATIONS
+   Target: Samsung Galaxy Tab E SM-T560 and similar tablets
+   Landscape: 1280x800px | Portrait: 800x1280px
+   ======================================== */
 
-    .platos-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
-    }
-
-    .header h1 {
-        font-size: 1.3rem;
-    }
-
-    .nav-tabs {
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .modal {
-        width: 85%;
-        max-width: 550px;
-    }
-}
-
-/* Tablets pequeñas y móviles grandes (481px - 768px) */
-@media (max-width: 768px) {
-    .main-content {
-        flex-direction: column;
+/* Tablet Landscape Mode (1024px - 1366px width) */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+    .wrap {
+        padding: 16px;
+        gap: 16px;
     }
 
     .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 250px;
-        border-right: none;
-        border-bottom: 1px solid var(--color-borde);
+        width: 280px;
+        padding: 14px;
     }
 
     .mesas-container {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px;
-        padding: 15px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        padding: 16px;
     }
 
     .mesa {
-        height: 100px;
-        padding: 10px;
+        height: 130px;
+        padding: 14px;
     }
 
     .mesa-numero {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+    }
+
+    /* Navigation tabs optimized for touch */
+    .nav-tab {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    /* Header adjustments */
+    .header h1 {
+        font-size: 1.4rem;
+    }
+
+    /* Platos grid for tablet landscape */
+    .platos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.3rem;
+    }
+
+    .plato-card {
+        padding: 0.9rem;
+    }
+
+    /* Modal adjustments */
+    .modal {
+        max-width: 700px;
+        width: 85%;
+    }
+
+    #orderModal .modal {
+        max-width: 1000px;
+    }
+
+    /* Order creation container */
+    .order-creation-container {
+        gap: 16px;
+    }
+
+    /* Touch-friendly button sizes */
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
+
+    .btn-quantity {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    /* Status buttons */
+    .status-button {
+        padding: 18px 14px;
+        min-height: 90px;
+        font-size: 1rem;
+    }
+
+    .status-icon {
+        font-size: 1.7rem;
+    }
+
+    /* Form inputs touch-friendly */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px;
+        font-size: 1rem;
+        min-height: 44px;
+    }
+
+    /* Login form */
+    .login-form {
+        width: 85%;
+        max-width: 450px;
+        padding: 2.5rem;
+    }
+
+    .login-form input,
+    .login-form select {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    .login-form button {
+        padding: 14px;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+}
+
+/* Tablet Portrait Mode (768px - 1024px width) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    /* Fix for main dashboard layout */
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
     }
 
     .header {
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
+        padding: 10px 16px;
+        flex-shrink: 0;
     }
 
     .header h1 {
@@ -1605,30 +1613,123 @@ div#dynamicTabContent {
     }
 
     .user-info {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .nav-tabs {
-        flex-wrap: wrap;
-        padding: 0 10px;
-    }
-
-    .nav-tab {
-        padding: 8px 12px;
         font-size: 0.9rem;
     }
 
-    div#dynamicTabContent {
-        padding: 16px;
+    .user-info button {
+        padding: 4px 10px;
+        font-size: 0.85rem;
     }
 
+    /* Navigation tabs - ensure they're visible */
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-shrink: 0;
+        padding: 0 12px;
+    }
+
+    .nav-tab {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-width: 100px;
+        flex-shrink: 0;
+    }
+
+    /* Main content area */
+    .main-content {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Dynamic tab content */
+    #dynamicTabContent {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Wrap container for mesas view */
+    .wrap {
+        flex-direction: row;
+        padding: 0;
+        gap: 10px;
+        height: 100%;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    /* Sidebar - make it more compact in portrait */
+    .sidebar {
+        width: 200px;
+        max-height: none;
+        overflow-y: auto;
+        padding: 10px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--color-borde);
+    }
+
+    .sidebar h3 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .status-item {
+        padding: 6px 8px;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    /* Mesas container */
+    .mesas-panel {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mesas-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+    .mesa {
+        height: 110px;
+        padding: 12px;
+    }
+
+    .mesa-numero {
+        font-size: 1.2rem;
+    }
+
+    .mesa-estado {
+        font-size: 0.75rem;
+    }
+
+    /* Platos grid portrait */
     .platos-grid-container {
-        padding: 3vw;
+        padding: 12px;
     }
 
     .platos-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .plato-card {
+        padding: 0.9rem;
+    }
+
+    .plato-img {
+        width: 100px;
+        height: 100px;
     }
 
     .category-section > h3 {
@@ -1639,178 +1740,241 @@ div#dynamicTabContent {
         font-size: 1.1em;
     }
 
+    /* Modals */
     .modal {
-        width: 95%;
-        max-width: none;
-    }
-
-    .modal-header h2 {
-        font-size: 1.2rem;
-    }
-
-    .cola-cocina {
-        grid-template-columns: 1fr;
-    }
-
-    .status-button-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Móviles (320px - 480px) */
-@media (max-width: 480px) {
-    .header h1 {
-        font-size: 1rem;
-    }
-
-    .user-info {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .user-info button {
-        width: 100%;
-    }
-
-    .nav-tabs {
-        padding: 0 5px;
-    }
-
-    .nav-tab {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        flex: 1;
-        text-align: center;
-    }
-
-    .mesas-container {
-        grid-template-columns: 1fr !important;
-        gap: 10px;
-        padding: 10px;
-    }
-
-    div#dynamicTabContent {
-        padding: 12px;
-    }
-
-    .platos-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .plato-card {
-        padding: 0.8rem;
-    }
-
-    .plato-img {
-        width: 100px;
-        height: 100px;
-    }
-
-    .category-section {
-        padding: 0.8rem;
-    }
-
-    .category-section > h3 {
-        font-size: 1.3em;
-    }
-
-    .subcategory-section > h4 {
-        font-size: 1em;
-    }
-
-    .modal {
-        width: 100%;
-        max-height: 95vh;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .modal-body {
-        padding: 16px;
-    }
-
-    .btn {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-    }
-
-    .crud-table, .crud-restaurantTable {
-        font-size: 0.85rem;
-    }
-
-    .crud-table th, .crud-table td,
-    .crud-restaurantTable th, .crud-restaurantTable td {
-        padding: 8px 5px;
+        max-width: 650px;
+        width: 90%;
+        max-height: 85vh;
     }
 
     .order-creation-container {
         flex-direction: column;
+        gap: 14px;
         max-height: none;
+    }
+
+    .order-summary-section {
+        border-left: none;
+        border-top: 1px solid var(--color-borde);
+        padding-left: 0;
+        padding-top: 14px;
+    }
+
+    /* Touch-friendly buttons */
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
+
+    .btn-quantity {
+        width: 38px;
+        height: 38px;
+    }
+
+    /* Status buttons grid */
+    .status-button-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .status-button {
+        padding: 14px 10px;
+        min-height: 80px;
+        font-size: 0.9rem;
+    }
+
+    .status-icon {
+        font-size: 1.4rem;
+    }
+
+    /* Login */
+    .login-form {
+        width: 90%;
+        max-width: 500px;
+        padding: 2rem;
+    }
+
+    .login-form input,
+    .login-form select {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .login-form button {
+        padding: 12px;
+        min-height: 44px;
+    }
+
+    /* Tables for CRUD operations */
+    .crud-table,
+    .crud-restaurantTable {
+        font-size: 0.9rem;
+    }
+
+    .crud-table th,
+    .crud-table td,
+    .crud-restaurantTable th,
+    .crud-restaurantTable td {
+        padding: 8px;
+    }
+
+    /* Kitchen view - cola-cocina */
+    .cola-cocina {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .orden-item {
+        padding: 12px;
+    }
+
+    /* Caja (cashier) view */
+    .order-card {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Medium Tablets (901px - 1023px) - Specific tweaks */
+@media (min-width: 901px) and (max-width: 1023px) {
+    .mesas-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .platos-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Small Tablets and Large Phones (769px - 900px) */
+@media (min-width: 769px) and (max-width: 900px) {
+    .wrap {
+        flex-direction: column;
+        padding: 12px;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .order-creation-container {
+        flex-direction: column;
     }
 
     .order-summary-section {
         border-left: none;
         border-top: 1px solid #ddd;
         padding-left: 0;
-        padding-top: 15px;
-    }
-
-    .plates-list {
-        max-height: 300px;
-    }
-
-    .login-form {
-        padding: 1.5rem;
-    }
-
-    .login-form h2 {
-        font-size: 1.3rem;
-    }
-
-    .login-form input, .login-form select {
-        font-size: 14px;
-        padding: 10px;
-    }
-}
-
-/* Orientación horizontal en móviles y tablets */
-@media (max-height: 600px) and (orientation: landscape) {
-    .modal {
-        max-height: 95vh;
-        overflow-y: auto;
+        padding-top: 20px;
     }
 
     .mesas-container {
-        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
     }
 
-    .sidebar {
-        max-height: 150px;
+    .platos-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Mejoras para touch en tablets */
-@media (hover: none) and (pointer: coarse) {
-    .mesa {
-        min-height: 100px;
+/* Mobile and Small Tablets (max-width: 768px) */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .mesas-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .nav-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .nav-tab {
-        min-height: 44px;
+        min-width: 100px;
+        flex-shrink: 0;
     }
 
-    .btn {
-        min-height: 44px;
+    .platos-grid {
+        grid-template-columns: 1fr;
     }
 
-    .modal-close {
-        min-width: 44px;
-        min-height: 44px;
+    /* Login for mobile */
+    .login-form {
+        width: 95%;
+        padding: 1.5rem;
+    }
+}
+
+/* Extra small devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .mesas-container {
+        grid-template-columns: 1fr;
     }
 
-    .btn-quantity {
-        min-width: 40px;
-        min-height: 40px;
+    .header h1 {
+        font-size: 1.1rem;
+    }
+
+    .nav-tab {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    .mesa {
+        height: 100px;
+    }
+
+    .mesa-numero {
+        font-size: 1.2rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    .btn,
+    .modal-close,
+    .nav-tab,
+    .mesa,
+    .plato-card {
+        min-height: 44px;
+        cursor: pointer;
+    }
+
+    /* Remove hover effects on touch devices */
+    .mesa:hover {
+        transform: none;
+    }
+
+    /* Add active states for better feedback */
+    .mesa:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+
+    .btn:active {
+        transform: scale(0.97);
+    }
+
+    /* Better touch scrolling */
+    .mesas-container,
+    .platos-grid-container,
+    .modal-body,
+    .sidebar {
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -2032,7 +2196,7 @@ div#dynamicTabContent {
     align-items: center;
 }
 
-/* Responsive para modales de pago */
+/* Responsive */
 @media (max-width: 768px) {
     .modal-payment,
     .modal-success {
@@ -2051,19 +2215,5 @@ div#dynamicTabContent {
 
     .summary-line {
         font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .payment-order-info {
-        padding: 10px;
-    }
-
-    .form-group input {
-        font-size: 14px;
-    }
-
-    .summary-line {
-        font-size: 0.8rem;
     }
 }
