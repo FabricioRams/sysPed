@@ -1,26 +1,22 @@
 <div class="wrap" th:fragment="mesasView">
-    <div class="sidebar-mobile-toggle" id="sidebarToggle">
-        <span>Ver Resumen</span>
-        <span class="toggle-icon">▼</span>
-    </div>
     <aside class="sidebar" id="sidebarContent">
         <h3>Resumen de Estados</h3>
         <div class="status-list">
             <div class="status-item status-verde">
                 <span>Mesas Libres</span>
-                <span id="countVerde" th:text="${resumenMesas.countLibres}">0</span>
+                <span class="count-verde" th:text="${resumenMesas.countLibres}">0</span>
             </div>
             <div class="status-item status-azul">
                 <span>Esperando Pedido</span>
-                <span id="countAzul" th:text="${resumenMesas.countEsperandoPedido}">0</span>
+                <span class="count-azul" th:text="${resumenMesas.countEsperandoPedido}">0</span>
             </div>
             <div class="status-item status-amarillo">
                 <span>Falta Atención</span>
-                <span id="countAmarillo" th:text="${resumenMesas.countFaltaAtencion}">0</span>
+                <span class="count-amarillo" th:text="${resumenMesas.countFaltaAtencion}">0</span>
             </div>
             <div class="status-item status-rojo">
                 <span>Pedido Entregado</span>
-                <span id="countRojo" th:text="${resumenMesas.countPedidoEntregado}">0</span>
+                <span class="count-rojo" th:text="${resumenMesas.countPedidoEntregado}">0</span>
             </div>
         </div>
 
@@ -31,6 +27,26 @@
     </aside>
 
     <main class="mesas-panel">
+        <!-- Mobile Status Summary -->
+        <div class="mobile-status-summary">
+            <div class="mobile-status-item status-verde">
+                <span>Libres</span>
+                <span class="count-verde" th:text="${resumenMesas.countLibres}">0</span>
+            </div>
+            <div class="mobile-status-item status-azul">
+                <span>Esperando</span>
+                <span class="count-azul" th:text="${resumenMesas.countEsperandoPedido}">0</span>
+            </div>
+            <div class="mobile-status-item status-amarillo">
+                <span>Atención</span>
+                <span class="count-amarillo" th:text="${resumenMesas.countFaltaAtencion}">0</span>
+            </div>
+            <div class="mobile-status-item status-rojo">
+                <span>Entregado</span>
+                <span class="count-rojo" th:text="${resumenMesas.countPedidoEntregado}">0</span>
+            </div>
+        </div>
+
         <div class="mesas-container" id="mesasGrid">
             <div th:each="mesaDTO : ${listaDeMesas}" class="mesa"
                 th:attr="data-numero=${mesaDTO.number}, data-status-enum=${mesaDTO.status}">

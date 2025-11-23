@@ -56,15 +56,10 @@ function actualizarResumen() {
     const countAm = mesasEls.filter(el => el.classList.contains('mesa-amarillo')).length;
     const countR = mesasEls.filter(el => el.classList.contains('mesa-rojo')).length;
 
-    const elVerde = document.getElementById('countVerde');
-    const elAzul = document.getElementById('countAzul');
-    const elAmar = document.getElementById('countAmarillo');
-    const elRojo = document.getElementById('countRojo');
-
-    if (elVerde) elVerde.textContent = countV;
-    if (elAzul) elAzul.textContent = countA;
-    if (elAmar) elAmar.textContent = countAm;
-    if (elRojo) elRojo.textContent = countR;
+    document.querySelectorAll('.count-verde').forEach(el => el.textContent = countV);
+    document.querySelectorAll('.count-azul').forEach(el => el.textContent = countA);
+    document.querySelectorAll('.count-amarillo').forEach(el => el.textContent = countAm);
+    document.querySelectorAll('.count-rojo').forEach(el => el.textContent = countR);
 }
 
 function initMesasFromDOM() {
@@ -425,7 +420,7 @@ function initializeMesas() {
 
     initMesasFromDOM();
     initMesaClickEvents();
-    initSidebarToggle();
+    // Sidebar toggle removed
     initMesaModalEvents();
     initOrderModalEvents();
     initViewOrderModalEvents();

@@ -1634,6 +1634,11 @@ div#dynamicTabContent {
     }
 }
 
+/* Mobile Status Summary (hidden by default) */
+.mobile-status-summary {
+    display: none;
+}
+
 /* Tablet Portrait Mode (768px - 1024px width) */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
 
@@ -1802,6 +1807,8 @@ div#dynamicTabContent {
         padding-top: 14px;
     }
 
+
+
     /* Touch-friendly buttons */
     .btn {
         padding: 10px 16px;
@@ -1897,43 +1904,47 @@ div#dynamicTabContent {
     }
 
     .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 0;
-        overflow: hidden;
-        padding: 0;
-        border: none;
-        transition: all 0.3s ease;
-        opacity: 0;
+        display: none;
     }
 
-    .sidebar.active {
-        max-height: 600px;
-        padding: 15px;
-        border: 1px solid var(--color-borde);
-        opacity: 1;
-        margin-bottom: 15px;
-    }
-
-    .status-list {
+    .mobile-status-summary {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid var(--color-borde);
     }
 
-    .status-item {
+    div#dynamicTabContent {
+        padding: 10px;
+    }
+
+    .mobile-status-item {
+        display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        margin-bottom: 0;
-        padding: 10px;
-        justify-content: center;
-        min-height: 80px;
+        padding: 8px 4px;
+        border-radius: 6px;
+        font-size: 0.8rem;
     }
 
-    .sidebar-mobile-toggle {
-        display: flex;
+    .mobile-status-item span:first-child {
+        font-weight: bold;
+        margin-bottom: 4px;
+        font-size: 0.75rem;
+    }
+
+    .mobile-status-item span:last-child {
+        font-size: 1.1rem;
+        font-weight: bold;
     }
 
     .mesas-container {
