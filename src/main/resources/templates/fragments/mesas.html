@@ -1,25 +1,27 @@
 <div class="wrap" th:fragment="mesasView">
-<div class="sidebar-mobile-toggle" id="sidebarToggle">
+    <div class="sidebar-mobile-toggle" id="sidebarToggle">
         <span>Ver Resumen</span>
         <span class="toggle-icon">▼</span>
     </div>
     <aside class="sidebar" id="sidebarContent">
         <h3>Resumen de Estados</h3>
-        <div class="status-item status-verde">
-            <span>Mesas Libres</span>
-            <span id="countVerde" th:text="${resumenMesas.countLibres}">0</span>
-        </div>
-        <div class="status-item status-azul">
-            <span>Esperando Pedido</span>
-            <span id="countAzul" th:text="${resumenMesas.countEsperandoPedido}">0</span>
-        </div>
-        <div class="status-item status-amarillo">
-            <span>Falta Atención</span>
-            <span id="countAmarillo" th:text="${resumenMesas.countFaltaAtencion}">0</span>
-        </div>
-        <div class="status-item status-rojo">
-            <span>Pedido Entregado</span>
-            <span id="countRojo" th:text="${resumenMesas.countPedidoEntregado}">0</span>
+        <div class="status-list">
+            <div class="status-item status-verde">
+                <span>Mesas Libres</span>
+                <span id="countVerde" th:text="${resumenMesas.countLibres}">0</span>
+            </div>
+            <div class="status-item status-azul">
+                <span>Esperando Pedido</span>
+                <span id="countAzul" th:text="${resumenMesas.countEsperandoPedido}">0</span>
+            </div>
+            <div class="status-item status-amarillo">
+                <span>Falta Atención</span>
+                <span id="countAmarillo" th:text="${resumenMesas.countFaltaAtencion}">0</span>
+            </div>
+            <div class="status-item status-rojo">
+                <span>Pedido Entregado</span>
+                <span id="countRojo" th:text="${resumenMesas.countPedidoEntregado}">0</span>
+            </div>
         </div>
 
         <hr style="margin:14px 0; border:none; border-top:1px solid var(--color-borde);">
@@ -30,9 +32,8 @@
 
     <main class="mesas-panel">
         <div class="mesas-container" id="mesasGrid">
-            <div th:each="mesaDTO : ${listaDeMesas}"
-                 class="mesa"
-                 th:attr="data-numero=${mesaDTO.number}, data-status-enum=${mesaDTO.status}">
+            <div th:each="mesaDTO : ${listaDeMesas}" class="mesa"
+                th:attr="data-numero=${mesaDTO.number}, data-status-enum=${mesaDTO.status}">
 
                 <div class="mesa-numero" th:text="${mesaDTO.number}">?</div>
                 <div class="mesa-estado">Cargando...</div>
@@ -43,7 +44,8 @@
     <div class="modal-overlay" id="tableStatusModal">
         <div class="modal">
             <div class="modal-header">
-                <h2 id="tableStatusModalTitle">Cambiar Estado: Mesa N° <span class="modal-title-restaurantTable-number">?</span>
+                <h2 id="tableStatusModalTitle">Cambiar Estado: Mesa N° <span
+                        class="modal-title-restaurantTable-number">?</span>
                 </h2>
                 <button class="modal-close" id="closeTableStatusModal">&times;</button>
             </div>
@@ -54,7 +56,8 @@
                     <h3 class="section-title">Acciones Rápidas</h3>
                     <button type="button" class="btn btn-crear-pedido-modal" id="crearPedidoBtn">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="margin-right: 6px;">
-                            <path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z"/>
+                            <path
+                                d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1z" />
                         </svg>
                         <span id="crearPedidoBtnText">Crear Pedido</span>
                     </button>
