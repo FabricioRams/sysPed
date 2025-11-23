@@ -4,39 +4,40 @@
         <h2>Personal</h2>
         <button class="btn btn-success" id="btnAgregarPersonal" type="button">Agregar Personal</button>
     </div>
-    <table class="crud-restaurantTable">
-        <thead>
-        <tr>
-            <th>DNI</th>
-            <th>Nombre</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody id="personalTbody">
-        <tr th:each="usuario : ${users}">
-            <td th:text="${usuario.dni}"></td>
-            <td th:text="${usuario.name}"></td>
-            <td th:text="${usuario.rol.name}"></td>
-            <td>
-                <button class="btn btn-primary btn-modificar-staff" type="button"
-                        th:attr="data-dni=${usuario.dni},data-name=${usuario.name},data-rol=${usuario.rol.name}"
-                >Modificar
-                </button>
-                <form th:action="@{/dashboard/staff/delete}" method="post" style="display:inline;"
-                      th:if="(${#strings.toUpperCase(currentRol)} == 'JEFE' and ${#strings.toUpperCase(usuario.rol.name)} != 'JEFE') or
-                                 (${#strings.toUpperCase(currentRol)} == 'ADMINISTRADOR' and ${#strings.toUpperCase(usuario.rol.name)} != 'JEFE' and ${#strings.toUpperCase(usuario.rol.name)} != 'ADMINISTRADOR') or
-                                 (${#strings.toUpperCase(currentRol)} != 'JEFE' and ${#strings.toUpperCase(currentRol)} != 'ADMINISTRADOR')">
-                    <input type="hidden" name="dni" th:value="${usuario.dni}">
-                    <button class="btn btn-danger" type="submit"
-                            onsubmit="return confirm('\u00bfEst\u00e1s seguro de que deseas eliminar a ' + this.querySelector('input[name=dni]').value + '?');">
-                        Eliminar
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div style="overflow-x: auto;">
+        <table class="crud-restaurantTable">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="personalTbody">
+                <tr th:each="usuario : ${users}">
+                    <td th:text="${usuario.dni}"></td>
+                    <td th:text="${usuario.name}"></td>
+                    <td th:text="${usuario.rol.name}"></td>
+                    <td>
+                        <button class="btn btn-primary btn-modificar-staff" type="button"
+                            th:attr="data-dni=${usuario.dni},data-name=${usuario.name},data-rol=${usuario.rol.name}">Modificar
+                        </button>
+                        <form th:action="@{/dashboard/staff/delete}" method="post" style="display:inline;"
+                            th:if="(${#strings.toUpperCase(currentRol)} == 'JEFE' and ${#strings.toUpperCase(usuario.rol.name)} != 'JEFE') or
+                                     (${#strings.toUpperCase(currentRol)} == 'ADMINISTRADOR' and ${#strings.toUpperCase(usuario.rol.name)} != 'JEFE' and ${#strings.toUpperCase(usuario.rol.name)} != 'ADMINISTRADOR') or
+                                     (${#strings.toUpperCase(currentRol)} != 'JEFE' and ${#strings.toUpperCase(currentRol)} != 'ADMINISTRADOR')">
+                            <input type="hidden" name="dni" th:value="${usuario.dni}">
+                            <button class="btn btn-danger" type="submit"
+                                onsubmit="return confirm('\u00bfEst\u00e1s seguro de que deseas eliminar a ' + this.querySelector('input[name=dni]').value + '?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div class="modal-overlay" id="staffEditModal">
@@ -50,7 +51,7 @@
                 <div class="form-group">
                     <label for="editDni">DNI</label>
                     <input type="text" id="editDni" name="dni" readonly required pattern="[0-9]{8}" maxlength="8"
-                           minlength="8" inputmode="numeric" autocomplete="off">
+                        minlength="8" inputmode="numeric" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="editName">Nombre</label>
@@ -59,19 +60,17 @@
                 <div class="form-group">
                     <label for="editRol">Rol</label>
                     <select id="editRol" name="rolName" required>
-                        <option th:each="rol : ${roles}"
-                                th:value="${rol.name}"
-                                th:text="${rol.name}">
+                        <option th:each="rol : ${roles}" th:value="${rol.name}" th:text="${rol.name}">
                         </option>
                     </select>
                     <input type="text" id="editRolReadonly" class="form-control" readonly disabled
-                           style="display:none; margin-top:5px;">
+                        style="display:none; margin-top:5px;">
                     <input type="hidden" id="editRolHidden" value="">
                 </div>
                 <div class="form-group">
                     <label for="editPassword">Contraseña</label>
                     <input type="password" id="editPassword" name="password"
-                           placeholder="Dejar en blanco para no cambiar">
+                        placeholder="Dejar en blanco para no cambiar">
                 </div>
                 <div class="btn-group">
                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -93,7 +92,7 @@
                 <div class="form-group">
                     <label for="createDni">DNI</label>
                     <input type="text" id="createDni" name="dni" required pattern="[0-9]{8}" maxlength="8" minlength="8"
-                           inputmode="numeric" autocomplete="off">
+                        inputmode="numeric" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="createName">Nombre</label>
@@ -102,9 +101,7 @@
                 <div class="form-group">
                     <label for="createRol">Rol</label>
                     <select id="createRol" name="rolName" required>
-                        <option th:each="rol : ${roles}"
-                                th:value="${rol.name}"
-                                th:text="${rol.name}">
+                        <option th:each="rol : ${roles}" th:value="${rol.name}" th:text="${rol.name}">
                         </option>
                     </select>
                 </div>

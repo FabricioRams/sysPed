@@ -7,7 +7,7 @@
         <div class="order-status-badge badge-listo">Listo</div>
     </div>
 
-    <div id="cajaOrdersContainer">
+    <div id="cajaOrdersContainer" class="cola-cocina">
         <p>Cargando pedidos...</p>
     </div>
 </div>
@@ -21,7 +21,7 @@
         </div>
         <div class="modal-body">
             <input type="hidden" id="paymentOrderId">
-            
+
             <!-- Información del pedido -->
             <div class="payment-order-info">
                 <p><strong>Mesa:</strong> <span id="paymentTableNumber"></span></p>
@@ -44,7 +44,8 @@
             <div id="boletaFields" class="receipt-fields">
                 <div class="form-group">
                     <label for="customerDni">DNI (opcional)</label>
-                    <input type="text" id="customerDni" maxlength="8" pattern="\d{8}" placeholder="Ingrese DNI de 8 dígitos">
+                    <input type="text" id="customerDni" maxlength="8" pattern="\d{8}"
+                        placeholder="Ingrese DNI de 8 dígitos">
                     <span class="field-error" id="dniError"></span>
                 </div>
                 <div class="form-group">
@@ -58,12 +59,14 @@
             <div id="facturaFields" class="receipt-fields" style="display: none;">
                 <div class="form-group">
                     <label for="customerRuc">RUC *</label>
-                    <input type="text" id="customerRuc" maxlength="11" pattern="\d{11}" placeholder="Ingrese RUC de 11 dígitos" required>
+                    <input type="text" id="customerRuc" maxlength="11" pattern="\d{11}"
+                        placeholder="Ingrese RUC de 11 dígitos" required>
                     <span class="field-error" id="rucError"></span>
                 </div>
                 <div class="form-group">
                     <label for="customerRazonSocial">Razón Social *</label>
-                    <input type="text" id="customerRazonSocial" maxlength="120" placeholder="Ingrese razón social" required>
+                    <input type="text" id="customerRazonSocial" maxlength="120" placeholder="Ingrese razón social"
+                        required>
                     <span class="field-error" id="razonSocialError"></span>
                 </div>
             </div>
@@ -114,7 +117,7 @@
         <div class="modal-body">
             <div class="success-icon">✓</div>
             <p class="success-message">El pedido #<span id="successOrderId"></span> ha sido marcado como pagado</p>
-            
+
             <div class="receipt-info">
                 <p><strong>Recibo #<span id="successReceiptId"></span></strong></p>
                 <p><strong>Tipo:</strong> <span id="successReceiptType"></span></p>

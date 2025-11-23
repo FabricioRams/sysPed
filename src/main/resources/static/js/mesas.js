@@ -35,8 +35,8 @@ function sendTableUpdate(tableNumber, newStatus) {
     const url = `/dashboard/tables/${tableNumber}/status`;
     fetch(url, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({status: newStatus})
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
     }).then(resp => {
         if (!resp.ok) {
             return resp.text().then(text => {
@@ -297,6 +297,31 @@ function initMesaModalEvents() {
     overlay.addEventListener('click', overlay._statusButtonHandler);
 }
 
+
+
+function initSidebarToggle() {
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebarContent');
+
+    if (toggleBtn && sidebar) {
+        // Remove existing listener if any (to avoid duplicates on re-init)
+        if (toggleBtn._clickHandler) {
+            toggleBtn.removeEventListener('click', toggleBtn._clickHandler);
+        }
+
+        toggleBtn._clickHandler = function () {
+            sidebar.classList.toggle('active');
+            toggleBtn.classList.toggle('active');
+            const icon = toggleBtn.querySelector('.toggle-icon');
+            if (icon) {
+                icon.style.transform = sidebar.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        };
+
+        toggleBtn.addEventListener('click', toggleBtn._clickHandler);
+    }
+}
+
 function initOrderModalEvents() {
     const overlay = document.getElementById('orderModal');
     if (!overlay) return;
@@ -400,6 +425,7 @@ function initializeMesas() {
 
     initMesasFromDOM();
     initMesaClickEvents();
+    initSidebarToggle();
     initMesaModalEvents();
     initOrderModalEvents();
     initViewOrderModalEvents();
@@ -616,7 +642,7 @@ function submitOrder() {
         .then(data => {
             showToast('Pedido ' + (currentOrderId ? 'actualizado' : 'creado') + ' exitosamente', 'success');
             closeOrderModal();
-            updateTableInView({number: currentTableNumber, status: 'ESPERANDO_PEDIDO'});
+            updateTableInView({ number: currentTableNumber, status: 'ESPERANDO_PEDIDO' });
             actualizarResumen();
         })
         .catch(error => {
